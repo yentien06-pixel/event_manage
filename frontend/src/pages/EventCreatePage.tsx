@@ -188,10 +188,10 @@ export const EventCreatePage: React.FC = () => {
     const err: Record<string, string> = {};
     if (budgetItems && budgetItems.length > 0) {
       const invalidItem = budgetItems.some(
-        (b) => !b.itemName.trim() || Number(b.quantity) <= 0 || Number(b.unitPrice) < 0
+        (b) => !b.itemName.trim() || isNaN(Number(b.quantity)) || Number(b.quantity) <= 0 || isNaN(Number(b.unitPrice)) || Number(b.unitPrice) < 0
       );
       if (invalidItem) {
-        err.budget = 'Các khoản chi cần có tên rõ ràng, số lượng lớn hơn 0 và đơn giá không âm';
+        err.budget = 'Các khoản chi cần có tên rõ ràng, số lượng lớn hơn 0 và đơn giá là số không âm (VNĐ)';
       }
     }
     setErrors(err);
@@ -639,21 +639,55 @@ export const EventCreatePage: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <input
-                            type="number"
-                            min="1"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="1"
                             value={b.quantity || ''}
-                            onChange={(e) => updateBudgetRow(idx, 'quantity', Math.max(0, Number(e.target.value)))}
-                            className="w-full p-1.5 border border-slate-200 rounded-md text-center"
+                            onKeyDown={(e) => {
+                              const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End', 'Enter'];
+                              if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
+                              if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+                            }}
+                            onPaste={(e) => {
+                              const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
+                              e.preventDefault();
+                              updateBudgetRow(idx, 'quantity', pasted ? Math.max(1, parseInt(pasted, 10)) : 1);
+                            }}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, '');
+                              updateBudgetRow(idx, 'quantity', digits === '' ? 0 : Math.max(0, parseInt(digits, 10)));
+                            }}
+                            className="w-full p-1.5 border border-slate-200 rounded-md text-center font-mono focus:border-blue-500 focus:outline-none"
                           />
                         </td>
                         <td className="p-2">
                           <input
-                            type="number"
-                            step="10000"
-                            min="0"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="0"
                             value={b.unitPrice || ''}
-                            onChange={(e) => updateBudgetRow(idx, 'unitPrice', Math.max(0, Number(e.target.value)))}
-                            className="w-full p-1.5 border border-slate-200 rounded-md text-right font-mono"
+                            onKeyDown={(e) => {
+                              const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End', 'Enter'];
+                              if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
+                              // Chặn tuyệt đối mọi ký tự không phải số (bao gồm e, E, +, -, ., ký tự chữ cái)
+                              if (!/^[0-9]$/.test(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onPaste={(e) => {
+                              const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
+                              e.preventDefault();
+                              updateBudgetRow(idx, 'unitPrice', pasted ? Math.max(0, parseInt(pasted, 10)) : 0);
+                            }}
+                            onChange={(e) => {
+                              // Ràng buộc nghiêm ngặt: chỉ cho phép chuỗi số, loại bỏ mọi ký tự khác
+                              const digits = e.target.value.replace(/\D/g, '');
+                              const num = digits === '' ? 0 : Math.max(0, parseInt(digits, 10));
+                              updateBudgetRow(idx, 'unitPrice', num);
+                            }}
+                            className="w-full p-1.5 border border-slate-200 rounded-md text-right font-mono focus:border-blue-500 focus:outline-none"
                           />
                         </td>
                         <td className="p-2 text-right font-mono font-bold text-slate-800">
@@ -857,7 +891,7 @@ export const EventCreatePage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-[#075F9F] hover:bg-[#054877] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
               >
                 Tiếp tục <ArrowRight className="w-4 h-4" />
               </button>
@@ -875,7 +909,7 @@ export const EventCreatePage: React.FC = () => {
                   type="button"
                   disabled={saving}
                   onClick={() => handleSave(true)}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-sm"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-[#0E9045] hover:bg-[#0A6D34] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
                 >
                   <Send className="w-4 h-4" /> Nộp hồ sơ chính thức
                 </button>

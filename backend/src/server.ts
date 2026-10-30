@@ -3,7 +3,7 @@ import { config } from './config';
 
 const PORT = config.port || 3001;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`  EventFlow Backend API Server is running!`);
   console.log(`  URL: http://localhost:${PORT}`);

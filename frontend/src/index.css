@@ -1,11 +1,50 @@
 @import "tailwindcss";
 
+@theme {
+  --color-blue-50: #eff6fc;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #0b69b3;
+  --color-blue-600: #075ea1;
+  --color-blue-700: #054877;
+  --color-blue-800: #043a60;
+  --color-blue-900: #032b47;
+  --color-blue-950: #021c30;
+
+  --color-due: #075ea1;
+  --color-due-dark: #054877;
+  --color-due-navy: #062c51;
+}
+
 @layer base {
   :root {
-    --primary: #1e3a8a;
-    --primary-hover: #1e40af;
-    --sidebar-bg: #0f172a;
-    --surface: #ffffff;
+    --color-due-blue: #075ea1;
+    --color-due-blue-dark: #054877;
+    --color-due-blue-light: #eff6fc;
+    --color-due-green: #0E9045;
+    --color-due-green-dark: #0A6D34;
+    --color-due-orange: #ea580c;
+    --color-due-orange-dark: #c2410c;
+    --color-due-danger: #b74245;
+    --color-surface: #FFFFFF;
+    --color-bg-app: #F6F8FB;
+    --color-border: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--color-bg-app);
+    color: #1E293B;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Dual-mode Keyboard-only high-visibility focus ring according to Chuong 6 */
+  *:focus-visible {
+    outline: 2px solid #075ea1 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(7, 94, 161, 0.25) !important;
   }
 }
 
@@ -23,4 +62,15 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Sticky Action Bar according to Fitts's Law */
+.sticky-action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid #E2E8F0;
+  box-shadow: 0 -4px 16px -2px rgba(15, 23, 42, 0.08);
 }

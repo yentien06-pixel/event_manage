@@ -3,6 +3,7 @@ import { config } from '../config';
 
 export interface AIReviewResult {
   isAI: boolean;
+  aiProvider?: string;
   score: number; // 0 - 100
   summary: string;
   missingFields: string[];
@@ -14,6 +15,47 @@ export interface AIReviewResult {
     level: 'INFO' | 'WARNING' | 'ERROR';
     message: string;
   }[];
+}
+
+/**
+ * Call external AI Provider (e.g. Google Gemini) if configured
+ */
+async function callExternalAI(event: any, ruleSummary: string): Promise<string | null> {
+  if (!config.aiApiKey) return null;
+
+  try {
+    const prompt = `Bạn là trợ lý AI thẩm định hồ sơ sự kiện sinh viên theo Quy chế số 184/QĐ-ĐHKT của Trường Đại học Kinh tế - ĐH Đà Nẵng.
+Hãy đưa ra 1 đoạn nhận xét tổng quan ngắn gọn (tối đa 3 câu) về mức độ hoàn thiện của hồ sơ sau:
+- Tên sự kiện: ${event.title}
+- Đơn vị tổ chức: ${event.organizingUnit}
+- Mục tiêu: ${event.objectives || 'Chưa có'}
+- Số người tham gia dự kiến: ${event.expectedAttendees || 0}
+- Ngân sách dự toán: ${event.budgetItems?.reduce((s: number, i: any) => s + i.totalPrice, 0) || 0} VNĐ
+- Kết quả kiểm tra quy chế: ${ruleSummary}
+
+Hãy trả lời ngắn gọn, trang trọng, mang tính xây dựng.`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.aiApiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data: any = await res.json();
+      return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    }
+  } catch (_e) {
+    // Graceful fallback to rule-based
+  }
+  return null;
 }
 
 export async function reviewApplication(eventId: string): Promise<AIReviewResult> {
@@ -29,7 +71,7 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
 
   if (!event) throw new Error('Không tìm thấy sự kiện');
 
-  // Rule-based analyzer (fallback or default)
+  // Rule-based analyzer (based on DUE Event Regulation 184/QĐ-ĐHKT)
   const missingFields: string[] = [];
   const inconsistencies: string[] = [];
   const risks: string[] = [];
@@ -54,6 +96,12 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
     details.push({ category: 'Quy mô', level: 'ERROR', message: 'Cần có số lượng dự kiến để bố trí cơ sở vật chất' });
   }
 
+  // Contact info check
+  if (!event.contactPerson || !event.contactPhone) {
+    missingFields.push('Chưa có thông tin người phụ trách hoặc số điện thoại liên hệ');
+    details.push({ category: 'Thông tin chung', level: 'WARNING', message: 'Cần số điện thoại người phụ trách để phối hợp bàn giao hội trường & xử lý sự cố' });
+  }
+
   // 2. Schedule Check
   if (!event.startDate || !event.endDate) {
     missingFields.push('Chưa chọn thời gian bắt đầu hoặc kết thúc');
@@ -72,6 +120,12 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
     } else if (start > end) {
       inconsistencies.push('Thời gian kết thúc phải sau thời gian bắt đầu');
       details.push({ category: 'Thời gian', level: 'ERROR', message: 'Thời gian kết thúc sớm hơn thời gian bắt đầu' });
+    } else {
+      const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      if (durationHours < 0.5) {
+        inconsistencies.push('Thời lượng sự kiện quá ngắn (dưới 30 phút)');
+        details.push({ category: 'Thời gian', level: 'WARNING', message: 'Thời lượng sự kiện dưới 30 phút, cần kiểm tra lại khung giờ' });
+      }
     }
   }
 
@@ -99,9 +153,18 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
     details.push({ category: 'An toàn', level: 'WARNING', message: 'Cần phương án phòng cháy chữa cháy, lối thoát hiểm và điều phối y tế' });
   }
 
-  // 6. Facility & Capacity Match
+  // 6. Facility, Status & Capacity Match
+  if (event.status === 'FACILITY_CONFLICT') {
+    inconsistencies.push('Hồ sơ đang bị trùng lịch hội trường với sự kiện khác. Cần chọn phòng hoặc khung giờ thay thế.');
+    details.push({ category: 'Cơ sở vật chất', level: 'ERROR', message: 'Phát hiện xung đột lịch mượn địa điểm trên hệ thống' });
+  }
+
   if (event.resourceBookings && event.resourceBookings.length > 0) {
     for (const b of event.resourceBookings) {
+      if (b.status === 'CONFLICT') {
+        inconsistencies.push(`Lịch mượn phòng ${b.facility?.name || ''} đang ở trạng thái xung đột (CONFLICT)`);
+        details.push({ category: 'Cơ sở vật chất', level: 'ERROR', message: `Trùng lịch hội trường ${b.facility?.name || ''}` });
+      }
       if (b.facility && b.facility.capacity && (event.expectedAttendees || 0) > b.facility.capacity) {
         inconsistencies.push(`Số người tham dự (${event.expectedAttendees}) vượt quá sức chứa hội trường ${b.facility.name} (${b.facility.capacity} chỗ)`);
         details.push({ category: 'Cơ sở vật chất', level: 'ERROR', message: `Quá tải sức chứa hội trường ${b.facility.name}` });
@@ -111,7 +174,13 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
     suggestions.push('Chưa đăng ký hội trường hoặc phòng mượn thông qua hệ thống');
   }
 
-  const score = Math.max(20, 100 - (missingFields.length * 15 + inconsistencies.length * 20 + risks.length * 10));
+  // 7. Attachments Check
+  if (!event.attachments || event.attachments.length === 0) {
+    suggestions.push('Nên đính kèm tệp văn bản (Kế hoạch tổ chức, Tờ trình hoặc Ma trận rủi ro) để thuận tiện xét duyệt');
+    details.push({ category: 'Tài liệu đính kèm', level: 'INFO', message: 'Hồ sơ chưa có tệp đính kèm văn bản' });
+  }
+
+  const score = Math.max(15, 100 - (missingFields.length * 15 + inconsistencies.length * 20 + risks.length * 10));
 
   let summary = `Hồ sơ đạt ${score}/100 điểm đánh giá sơ bộ. `;
   if (inconsistencies.length > 0 || missingFields.length > 0) {
@@ -120,8 +189,21 @@ export async function reviewApplication(eventId: string): Promise<AIReviewResult
     summary += 'Hồ sơ có cấu trúc tương đối đầy đủ và hợp lệ, sẵn sàng chuyển cấp xét duyệt.';
   }
 
+  // Optional AI enhancement
+  let isAI = false;
+  let aiProvider = 'Rule-based Quy chế 184/QĐ-ĐHKT';
+  if (config.aiApiKey) {
+    const aiNote = await callExternalAI(event, summary);
+    if (aiNote) {
+      summary += ` [Gợi ý từ AI: ${aiNote}]`;
+      isAI = true;
+      aiProvider = 'Google Gemini (Hybrid)';
+    }
+  }
+
   return {
-    isAI: config.aiProvider !== 'rule-based' && !!config.aiApiKey,
+    isAI,
+    aiProvider,
     score,
     summary,
     missingFields,

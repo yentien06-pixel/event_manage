@@ -182,7 +182,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response, next: NextF
 router.put('/:id', authenticate, validate(createEventSchema.partial().extend({ changeNote: z.string().optional(), expectedVersion: z.number().int().positive().optional() })), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    const updated = await updateEvent(id, req.body, req.user!.userId);
+    const updated = await updateEvent(id, req.body, req.user!.userId, req.user!.role);
     res.json({ success: true, data: updated });
   } catch (err: any) {
     res.status(400).json({ success: false, error: err.message });

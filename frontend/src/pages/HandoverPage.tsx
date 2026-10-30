@@ -143,7 +143,7 @@ export const HandoverPage: React.FC = () => {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-[#075F9F] hover:bg-[#054877] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer min-h-[40px] transition-all"
             >
               <Send className="w-3.5 h-3.5" /> Xác nhận ký biên bản điện tử
             </button>

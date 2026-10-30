@@ -291,7 +291,7 @@ export async function getEventById(id: string) {
   return event;
 }
 
-export async function updateEvent(id: string, data: Record<string, unknown>, userId: string) {
+export async function updateEvent(id: string, data: Record<string, unknown>, userId: string, userRole?: string) {
   const event = await prisma.event.findUnique({ where: { id } });
   if (!event || event.deletedAt) throw new Error('Không tìm thấy hồ sơ');
 
@@ -308,7 +308,7 @@ export async function updateEvent(id: string, data: Record<string, unknown>, use
     throw new Error('Không thể chỉnh sửa hồ sơ ở trạng thái hiện tại');
   }
 
-  if (event.createdById !== userId) {
+  if (event.createdById !== userId && userRole !== 'ADMIN') {
     throw new Error('Không có quyền chỉnh sửa hồ sơ này');
   }
 

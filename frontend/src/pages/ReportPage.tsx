@@ -55,7 +55,7 @@ export const ReportPage: React.FC = () => {
     if (!success) return;
     await transitionEvent(
       selectedEvent.id,
-      'BTC nộp báo cáo tổng kết sự kiện cho Đoàn trường',
+      'SUBMIT_REPORT',
       'REPORT_PENDING',
       'Đã hoàn thiện báo cáo và số liệu thực tế'
     );
@@ -170,7 +170,7 @@ export const ReportPage: React.FC = () => {
         <div className="flex justify-end pt-3 border-t">
           <button
             type="submit"
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs"
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#075F9F] hover:bg-[#054877] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px] transition-all"
           >
             <Send className="w-4 h-4" /> Nộp báo cáo cho Đoàn Trường
           </button>

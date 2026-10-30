@@ -6,15 +6,22 @@
 const BASE_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
 export function getAuthToken(): string | null {
-  return localStorage.getItem('eventflow_token');
+  return localStorage.getItem('eventflow_token') || sessionStorage.getItem('eventflow_token');
 }
 
-export function setAuthToken(token: string): void {
-  localStorage.setItem('eventflow_token', token);
+export function setAuthToken(token: string, remember = true): void {
+  if (remember) {
+    localStorage.setItem('eventflow_token', token);
+    sessionStorage.removeItem('eventflow_token');
+  } else {
+    sessionStorage.setItem('eventflow_token', token);
+    localStorage.removeItem('eventflow_token');
+  }
 }
 
 export function removeAuthToken(): void {
   localStorage.removeItem('eventflow_token');
+  sessionStorage.removeItem('eventflow_token');
 }
 
 export async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -110,6 +117,11 @@ export const api = {
   },
 
   // AI Assistant
+  aiReview: (eventId: string) =>
+    request<{ success: boolean; data: any }>('/ai/review', {
+      method: 'POST',
+      body: JSON.stringify({ eventId }),
+    }),
   analyzeEvent: (eventData: any) =>
     request<{ success: boolean; data: any }>('/ai/analyze-event', {
       method: 'POST',

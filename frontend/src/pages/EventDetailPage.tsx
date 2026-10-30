@@ -68,6 +68,29 @@ export const EventDetailPage: React.FC = () => {
     if (event) api.getAvailableActions(event.id).then(result => { if (active) setAvailableActions(result.data); }).catch(() => {});
     return () => { active = false; };
   }, [event?.id, event?.status, currentUser.id]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modalAction.isOpen) {
+        setModalAction((prev) => ({ ...prev, isOpen: false }));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalAction.isOpen]);
+
+  const getActionStyle = (action: string) => {
+    if (['APPROVE', 'CONFIRM', 'ACCEPT', 'READY', 'HANDOVER', 'SETTLE', 'COMPLETE'].includes(action)) {
+      return 'bg-[#0E9045] hover:bg-[#0A6D34] text-white shadow-xs';
+    }
+    if (['REQUEST_REVISION', 'ADJUST', 'SUBMIT_DOCUMENTS', 'PROCEED_BUDGET'].includes(action)) {
+      return 'bg-[#FE751E] hover:bg-[#D45B0E] text-white shadow-xs';
+    }
+    if (['REJECT', 'CONFLICT', 'INCIDENT', 'REJECT_PAYMENT', 'CANCEL'].includes(action)) {
+      return 'bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-xs';
+    }
+    return 'bg-[#075F9F] hover:bg-[#054877] text-white shadow-xs';
+  };
+
   const actionLabels: Record<string, string> = {
     SUBMIT: 'Nộp hồ sơ', RESUBMIT: 'Nộp lại hồ sơ', APPROVE: 'Phê duyệt', REJECT: 'Từ chối', REQUEST_REVISION: 'Yêu cầu chỉnh sửa', CANCEL: 'Hủy hồ sơ',
     PROCEED_BUDGET: 'Chuyển duyệt dự toán', CONFIRM: 'Xác nhận giữ chỗ', CONFLICT: 'Báo trùng lịch', ADJUST: 'Gửi lại yêu cầu CSVC', READY: 'Xác nhận sẵn sàng', HANDOVER: 'Xác nhận bàn giao',
@@ -156,11 +179,24 @@ export const EventDetailPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {availableActions.map(action => <button key={action} disabled={saving}
-              onClick={() => setModalAction({ isOpen: true, title: actionLabels[action] || action, actionName: action, targetStatus: 'DRAFT', requireComment: ['REJECT', 'REQUEST_REVISION', 'CONFLICT', 'INCIDENT', 'REJECT_PAYMENT'].includes(action) })}
-              className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold disabled:opacity-50">
-              {actionLabels[action] || action}
-            </button>)}
+            {availableActions.map((action) => (
+              <button
+                key={action}
+                disabled={saving}
+                onClick={() =>
+                  setModalAction({
+                    isOpen: true,
+                    title: actionLabels[action] || action,
+                    actionName: action,
+                    targetStatus: 'DRAFT',
+                    requireComment: ['REJECT', 'REQUEST_REVISION', 'CONFLICT', 'INCIDENT', 'REJECT_PAYMENT'].includes(action),
+                  })
+                }
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all disabled:opacity-50 flex items-center gap-1.5 ${getActionStyle(action)}`}
+              >
+                {actionLabels[action] || action}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -657,6 +693,38 @@ export const EventDetailPage: React.FC = () => {
         )}
       </div>
 
+      {/* Sticky Action Bar according to Fitts's Law */}
+      {availableActions.length > 0 && (
+        <div className="sticky bottom-4 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl py-3 px-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#075F9F] animate-pulse shrink-0" />
+            <span className="text-xs font-bold text-slate-700">
+              Thao tác nhanh cho {roleNames[currentUser.role]}:
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {availableActions.map((action) => (
+              <button
+                key={action}
+                disabled={saving}
+                onClick={() =>
+                  setModalAction({
+                    isOpen: true,
+                    title: actionLabels[action] || action,
+                    actionName: action,
+                    targetStatus: 'DRAFT',
+                    requireComment: ['REJECT', 'REQUEST_REVISION', 'CONFLICT', 'INCIDENT', 'REJECT_PAYMENT'].includes(action),
+                  })
+                }
+                className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all disabled:opacity-50 min-h-[38px] flex items-center gap-1.5 ${getActionStyle(action)}`}
+              >
+                {actionLabels[action] || action}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Decision Action Modal */}
       {modalAction.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-xs p-4">
@@ -710,7 +778,7 @@ export const EventDetailPage: React.FC = () => {
               </button>
               <button
                 onClick={handleConfirmDecision}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-xs"
+                className={`px-4 py-2 rounded-xl text-xs font-bold text-white cursor-pointer shadow-xs transition-all ${getActionStyle(modalAction.actionName)}`}
               >
                 Xác nhận thực hiện
               </button>

@@ -1,114 +1,434 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, ChevronDown, X, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { roleNames } from '../utils/helpers';
-import { UserRole } from '../types';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Cơ chế lưu danh sách tài khoản đã đăng nhập
+// Key riêng biệt, tách hoàn toàn khỏi eventflow_token (auth) và session
+// ─────────────────────────────────────────────────────────────────────────────
+const ACCOUNTS_HISTORY_KEY = 'eventflow_accounts_history';
+
+interface SavedAccount {
+  email: string;
+  lastLogin: string; // ISO 8601
+}
+
+/** Đọc danh sách tài khoản đã lưu. Trả về [] nếu chưa có hoặc dữ liệu lỗi. */
+function getSavedAccounts(): SavedAccount[] {
+  try {
+    const raw = localStorage.getItem(ACCOUNTS_HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is SavedAccount =>
+        typeof item === 'object' && item !== null &&
+        typeof item.email === 'string' && item.email.length > 0
+    );
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Thêm hoặc cập nhật một tài khoản vào danh sách.
+ * - Email đã tồn tại → chỉ cập nhật lastLogin, không tạo bản sao.
+ * - Email mới → thêm vào danh sách.
+ * - Sắp xếp theo lastLogin giảm dần.
+ * - KHÔNG xóa các tài khoản cũ.
+ */
+function upsertSavedAccount(email: string): SavedAccount[] {
+  const list = getSavedAccounts();
+  const now = new Date().toISOString();
+  const existingIdx = list.findIndex(
+    (item) => item.email.toLowerCase() === email.toLowerCase()
+  );
+  if (existingIdx >= 0) {
+    list[existingIdx] = { email: list[existingIdx].email, lastLogin: now };
+  } else {
+    list.push({ email, lastLogin: now });
+  }
+  list.sort((a, b) => b.lastLogin.localeCompare(a.lastLogin));
+  localStorage.setItem(ACCOUNTS_HISTORY_KEY, JSON.stringify(list));
+  return list;
+}
+
+/**
+ * Xóa một tài khoản khỏi danh sách.
+ * Chỉ xóa đúng email được chỉ định, các tài khoản còn lại giữ nguyên.
+ */
+function removeSavedAccount(email: string): SavedAccount[] {
+  const list = getSavedAccounts().filter(
+    (item) => item.email.toLowerCase() !== email.toLowerCase()
+  );
+  localStorage.setItem(ACCOUNTS_HISTORY_KEY, JSON.stringify(list));
+  return list;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Component LoginPage
+// ─────────────────────────────────────────────────────────────────────────────
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { loginWithEmail, allUsers } = useAuth();
+  const { loginWithEmail } = useAuth();
 
-  const [email, setEmail] = useState(new URLSearchParams(window.location.search).get('email') || 'btc1@eventflow.vn');
-  const [password, setPassword] = useState('123456');
-  const [error, setError] = useState('');
+  // ── State form ──────────────────────────────────────────────────────────────
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [generalError, setGeneralError] = useState('');
   const [pending, setPending] = useState(false);
+
+  // ── Danh sách tài khoản đã lưu ─────────────────────────────────────────────
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>(
+    () => getSavedAccounts()
+  );
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Ref bao quanh toàn bộ vùng email + dropdown để detect click-outside
+  const dropdownWrapperRef = useRef<HTMLDivElement>(null);
+
+  // Điền email gần nhất khi mount
+  useEffect(() => {
+    const accounts = getSavedAccounts();
+    if (accounts.length > 0) {
+      setEmail(accounts[0].email);
+    }
+  }, []);
+
+  // Đóng dropdown khi click ra ngoài vùng email + dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownWrapperRef.current &&
+        !dropdownWrapperRef.current.contains(e.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  // ── Chọn tài khoản từ danh sách đã lưu ──────────────────────────────────────
+  const handleSelectAccount = (selectedEmail: string) => {
+    setEmail(selectedEmail);
+    setEmailError('');
+    setShowDropdown(false);
+    setTimeout(() => {
+      (document.getElementById('login-password') as HTMLInputElement | null)?.focus();
+    }, 30);
+  };
+
+  // ── Xóa một tài khoản khỏi danh sách lịch sử ──────────────────────────────
+  const handleRemoveAccount = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    targetEmail: string
+  ) => {
+    e.stopPropagation();
+    const updated = removeSavedAccount(targetEmail);
+    setSavedAccounts(updated);
+    if (email.toLowerCase() === targetEmail.toLowerCase()) {
+      setEmail(updated.length > 0 ? updated[0].email : '');
+    }
+    if (updated.length === 0) setShowDropdown(false);
+  };
+
+  // ── Xử lý đăng nhập ────────────────────────────────────────────────────────
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pending) return;
-    setPending(true); setError('');
-    try { await loginWithEmail(email, password); navigate('/'); }
-    catch (error) { setError(error instanceof Error ? error.message : 'Không kết nối được máy chủ. Hãy chạy CHAY_FULLSTACK.bat.'); }
-    finally { setPending(false); }
-  };
-  const handleQuickLogin = (role: UserRole) => {
-    const user = allUsers.find(u => u.role === role);
-    if (user) setEmail(user.email);
+    setShowDropdown(false);
+    let hasError = false;
+
+    if (!email.trim()) {
+      setEmailError('Vui lòng nhập email');
+      hasError = true;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Vui lòng nhập mật khẩu');
+      hasError = true;
+    } else {
+      setPasswordError('');
+    }
+
+    if (hasError) return;
+
+    setPending(true);
+    setGeneralError('');
+    try {
+      await loginWithEmail(email.trim(), password, rememberMe);
+      upsertSavedAccount(email.trim());
+      navigate('/');
+    } catch (err: any) {
+      setGeneralError(err?.message || 'Email hoặc mật khẩu không chính xác');
+    } finally {
+      setPending(false);
+    }
   };
 
+  const hasAccounts = savedAccounts.length > 0;
+
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        {/* Brand */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-500/30">
-            <GraduationCap className="w-8 h-8" />
-          </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">EventFlow</h1>
-          <p className="text-xs text-slate-300">
-            Hệ thống Quản lý Quy trình Tổ chức Sự kiện Sinh viên
-          </p>
-          <div className="text-[11px] text-blue-400 font-semibold">
-            Trường Đại học Kinh tế – Đại học Đà Nẵng
+    <div className="min-h-screen bg-[#F6F7FB] flex items-center justify-center p-4 sm:p-5">
+      <div
+        className="w-[90vw] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col md:flex-row my-auto"
+        style={{ minHeight: '82vh' }}
+      >
+        {/* ── Left Side: Campus Image ── */}
+        <div
+          className="relative w-full md:w-[52%] overflow-hidden select-none rounded-3xl md:rounded-r-none"
+          style={{ minHeight: '60vh' }}
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url('/images/SanTruongDUE.jpg')` }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(24,80,117,0) 0%, rgba(24,80,117,0.45) 45%, rgba(14,58,89,0.92) 80%, rgba(10,45,70,0.98) 100%)',
+            }}
+          />
+          <div className="relative z-10 flex flex-col justify-end h-full p-10 sm:p-14 lg:p-16 text-white">
+            <span className="text-sm sm:text-base font-bold tracking-widest text-white/90 uppercase">
+              ĐẠI HỌC ĐÀ NẴNG
+            </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-2 leading-snug">
+              Trường Đại học Kinh tế
+            </h1>
+            <p className="text-sm sm:text-base text-white/95 leading-relaxed mt-4 max-w-xl font-normal">
+              Hệ thống tiếp nhận, xét duyệt và cấp phép tổ chức sự kiện số hóa toàn diện –
+              Tối ưu hóa quy trình nghiệp vụ, kết nối thông suốt giữa Ban Tổ chức, Ban Chủ
+              nhiệm Khoa, Đoàn Trường và các Phòng chức năng.
+            </p>
           </div>
         </div>
 
-        {/* Login Box */}
-        <div className="bg-white rounded-3xl p-6 shadow-2xl space-y-5">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Email đăng nhập:</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setError('');
-                  }}
-                  className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-blue-500"
-                />
-              </div>
+        {/* ── Right Side: Clean Login Form (No Role List) ── */}
+        <div className="w-full md:w-[48%] bg-white p-10 sm:p-14 lg:p-20 flex flex-col justify-center rounded-3xl md:rounded-l-none">
+          <div className="w-full max-w-xl mx-auto">
+
+            {/* Header */}
+            <div className="text-center mb-8">
+              <img
+                src="/images/due_logo_emblem.png"
+                alt="Logo DUE"
+                className="h-20 sm:h-24 w-auto object-contain mx-auto"
+              />
+              <h2 className="text-center font-bold text-base sm:text-lg tracking-wide text-[#005597] mt-5 uppercase">
+                TRƯỜNG ĐẠI HỌC KINH TẾ – ĐH ĐÀ NẴNG
+              </h2>
+              <p className="text-center text-sm sm:text-base text-slate-500 font-medium mt-2">
+                Hệ thống quản lý quy trình tổ chức sự kiện
+              </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Mật khẩu:</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-blue-500"
-                />
-              </div>
-            </div>
+            {/* Login Form */}
+            <form onSubmit={handleLogin} noValidate className="space-y-5">
 
-            {error && <div className="text-xs text-rose-500 font-medium">{error}</div>}
+              {/* ── Email Field + Dropdown ── */}
+              <div>
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
+                  Email <span className="text-red-500">*</span>
+                </label>
 
-            <button
-              type="submit" disabled={pending}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>Đăng nhập hệ thống</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
+                <div className="relative" ref={dropdownWrapperRef}>
+                  {/* Input row */}
+                  <div className="relative flex items-center">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (e.target.value.trim()) setEmailError('');
+                        if (hasAccounts) setShowDropdown(true);
+                      }}
+                      onFocus={() => {
+                        if (hasAccounts) setShowDropdown(true);
+                      }}
+                      placeholder="Ví dụ: btc1@eventflow.vn"
+                      autoComplete="off"
+                      className={`w-full px-5 py-3.5 text-sm sm:text-base text-slate-800
+                        placeholder-slate-400 bg-white rounded-xl border transition-all
+                        ${emailError
+                          ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20'
+                          : 'border-slate-300 focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20'
+                        }
+                        ${hasAccounts ? 'pr-10' : ''}`}
+                    />
 
-          {/* Quick Demo Access Bar */}
-          <div className="pt-4 border-t border-slate-100 space-y-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center">
-              Chọn email tài khoản mẫu, sau đó nhập mật khẩu:
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {allUsers.slice(0, 6).map((u) => (
-                <button
-                  key={u.id}
-                  type="button"
-                  onClick={() => handleQuickLogin(u.role)}
-                  className="p-2 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/60 text-left transition-all cursor-pointer group"
-                >
-                  <div className="font-bold text-slate-800 text-[11px] group-hover:text-blue-700 truncate">
-                    {u.fullName}
+                    {/* Chevron toggle button */}
+                    {hasAccounts && (
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDropdown((v) => !v);
+                        }}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400
+                          hover:text-slate-600 transition-colors cursor-pointer"
+                        title="Xem tài khoản đã đăng nhập"
+                      >
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200
+                            ${showDropdown ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                    )}
                   </div>
-                  <div className="text-[10px] text-slate-500">{roleNames[u.role].split('(')[0]}</div>
+
+                  {/* Dropdown danh sách tài khoản đã lưu */}
+                  {showDropdown && savedAccounts.length > 0 && (
+                    <div
+                      className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200
+                        rounded-xl shadow-xl overflow-hidden"
+                      style={{ zIndex: 9999 }}
+                    >
+                      <div className="px-3 pt-2.5 pb-1.5 flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/70">
+                        <Clock className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                        <span className="text-xs text-slate-400 font-medium">
+                          Tài khoản đã đăng nhập ({savedAccounts.length})
+                        </span>
+                      </div>
+
+                      <ul className="max-h-52 overflow-y-auto py-1">
+                        {savedAccounts.map((account) => (
+                          <li key={account.email}>
+                            <div
+                              className="flex items-center justify-between px-4 py-3
+                                hover:bg-[#f0f7ff] cursor-pointer group transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectAccount(account.email);
+                              }}
+                            >
+                              <div className="flex flex-col min-w-0 flex-1">
+                                <span className="text-sm font-semibold text-slate-700 truncate">
+                                  {account.email}
+                                </span>
+                                <span className="text-xs text-slate-400 mt-0.5">
+                                  {new Date(account.lastLogin).toLocaleString('vi-VN', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveAccount(e, account.email);
+                                }}
+                                className="ml-3 flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                  rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50
+                                  transition-colors opacity-0 group-hover:opacity-100"
+                                title={`Xóa ${account.email} khỏi danh sách`}
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {emailError && (
+                  <p className="text-sm text-[#b74245] mt-1.5 font-medium">{emailError}</p>
+                )}
+              </div>
+
+              {/* ── Password Field ── */}
+              <div>
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
+                  Mật khẩu <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (e.target.value.trim()) setPasswordError('');
+                    }}
+                    placeholder="Nhập mật khẩu..."
+                    className={`w-full pl-5 pr-12 py-3.5 text-sm sm:text-base text-slate-800
+                      placeholder-slate-400 bg-white rounded-xl border transition-all
+                      ${passwordError
+                        ? 'border-[#b74245] ring-2 ring-[#b74245]/20'
+                        : 'border-slate-300 focus:outline-none focus:border-[#075ea1] focus:ring-2 focus:ring-[#075ea1]/20'
+                      }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400
+                      hover:text-slate-600 transition-colors cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {passwordError && (
+                  <p className="text-sm text-[#b74245] mt-1.5 font-medium">{passwordError}</p>
+                )}
+              </div>
+
+              {/* ── Remember Me ── */}
+              <div className="pt-1">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-5 h-5 rounded text-[#075ea1] focus:ring-[#075ea1]
+                      border-slate-300 accent-[#075ea1] cursor-pointer"
+                  />
+                  <span className="text-sm sm:text-base text-slate-600">
+                    Ghi nhớ đăng nhập trên thiết bị này
+                  </span>
+                </label>
+              </div>
+
+              {/* ── Lỗi chung ── */}
+              {generalError && (
+                <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl
+                  text-sm font-medium text-center">
+                  {generalError}
+                </div>
+              )}
+
+              {/* ── Submit Button ── */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="w-full py-4 bg-[#075ea1] hover:bg-[#065089] text-white rounded-xl
+                    text-base sm:text-lg font-bold transition-all shadow-md flex items-center
+                    justify-center min-h-[52px] cursor-pointer disabled:opacity-60"
+                >
+                  {pending ? 'Đang đăng nhập...' : 'Đăng nhập hệ thống'}
                 </button>
-              ))}
-            </div>
+              </div>
+            </form>
+
           </div>
         </div>
       </div>

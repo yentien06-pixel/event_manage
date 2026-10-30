@@ -9,5 +9,5 @@ export const config = {
   maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10),
   aiApiKey: process.env.AI_API_KEY || '',
   aiProvider: process.env.AI_PROVIDER || 'rule-based',
-  jwtExpiresIn: '24h',
+  jwtExpiresIn: '30d',
 };

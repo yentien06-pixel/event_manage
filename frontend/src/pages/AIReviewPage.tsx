@@ -1,145 +1,279 @@
-import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   AlertTriangle,
   CheckCircle2,
-  XCircle,
-  HelpCircle,
-  Building,
-  TrendingUp,
   ShieldAlert,
-  ArrowRight,
+  RefreshCw,
+  XCircle,
+  Info,
+  Calendar,
+  MapPin,
+  Users,
+  Building,
+  ExternalLink,
+  Edit,
+  FileText,
+  BadgeAlert,
 } from 'lucide-react';
 import { useEvents } from '../contexts/EventContext';
-import { formatCurrency } from '../utils/helpers';
+import { api } from '../services/api';
+import { formatDate, statusLabels } from '../utils/helpers';
+
+interface AIReviewResult {
+  isAI: boolean;
+  aiProvider?: string;
+  score: number;
+  summary: string;
+  missingFields: string[];
+  inconsistencies: string[];
+  risks: string[];
+  suggestions: string[];
+  details: {
+    category: string;
+    level: 'INFO' | 'WARNING' | 'ERROR';
+    message: string;
+  }[];
+}
 
 export const AIReviewPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const { events, facilities } = useEvents();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { events } = useEvents();
 
-  const initialEventId = searchParams.get('eventId') || events[1]?.id || events[0]?.id;
-  const [selectedEventId, setSelectedEventId] = useState<string>(initialEventId);
+  const urlEventId = searchParams.get('eventId');
+  const [selectedEventId, setSelectedEventId] = useState<string>(urlEventId || events[0]?.id || '');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [result, setResult] = useState<AIReviewResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const event = events.find((e) => e.id === selectedEventId);
+  // Sync state if url query changes
+  useEffect(() => {
+    const qEventId = searchParams.get('eventId');
+    if (qEventId && qEventId !== selectedEventId) {
+      setSelectedEventId(qEventId);
+    }
+  }, [searchParams]);
 
-  const runAnalysis = () => {
+  // Sync default selection once events load
+  useEffect(() => {
+    if (!selectedEventId && events.length > 0) {
+      const targetId = urlEventId || events[0].id;
+      setSelectedEventId(targetId);
+    }
+  }, [events, selectedEventId, urlEventId]);
+
+  const runAnalysis = useCallback(async (eventId: string) => {
+    if (!eventId) return;
     setIsAnalyzing(true);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await api.aiReview(eventId);
+      setResult(res.data as AIReviewResult);
+    } catch (err: any) {
+      setError(err.message || 'Không thể kết nối đến máy chủ phân tích. Vui lòng thử lại.');
+      setResult(null);
+    } finally {
       setIsAnalyzing(false);
-    }, 600);
+    }
+  }, []);
+
+  // Run analysis whenever selectedEventId changes
+  useEffect(() => {
+    if (selectedEventId) {
+      runAnalysis(selectedEventId);
+    }
+  }, [selectedEventId, runAnalysis]);
+
+  const selectedEvent = events.find((e) => e.id === selectedEventId);
+
+  const handleSelectEvent = (id: string) => {
+    setSelectedEventId(id);
+    setSearchParams({ eventId: id });
   };
 
-  // Structured analysis calculation
-  const missingItems: string[] = [];
-  const riskItems: string[] = [];
-  const suggestions: string[] = [];
+  const score = result?.score ?? 0;
 
-  if (event) {
-    if (!event.safetyPlan && event.expectedAttendees > 200) {
-      riskItems.push(
-        `Quy mô sự kiện lớn (${event.expectedAttendees} người) nhưng chưa có phương án đảm bảo an toàn & PCCC đính kèm.`
-      );
-    }
-    if (event.budgetItems.length === 0) {
-      missingItems.push('Chưa có bảng kê dự toán kinh phí chi tiết.');
-    } else {
-      const total = event.budgetItems.reduce((s, i) => s + i.totalPrice, 0);
-      if (total > 30000000) {
-        riskItems.push(
-          `Tổng dự toán vượt 30 triệu đồng (${formatCurrency(total)}) - Yêu cầu giải trình định mức và hóa đơn đỏ VAT theo quy chế tài chính ĐHĐN.`
-        );
-      }
-    }
-    if (!event.scheduleItems || event.scheduleItems.length === 0) {
-      missingItems.push('Chưa có kịch bản chương trình (Agenda) phân bổ theo từng mốc thời gian.');
-    }
+  const levelIcon = (level: 'INFO' | 'WARNING' | 'ERROR') => {
+    if (level === 'ERROR') return <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />;
+    if (level === 'WARNING') return <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />;
+    return <Info className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />;
+  };
 
-    if (event.booking?.status === 'CONFLICT') {
-      riskItems.push('Phát hiện trùng lịch phòng mượn với sự kiện khác. Cần chọn phòng hoặc khung giờ thay thế.');
-    }
-
-    suggestions.push('Nên bổ sung link form khảo sát ý kiến sinh viên sau sự kiện để làm minh chứng trong báo cáo.');
-    suggestions.push('Đề xuất bố trí tối thiểu 4 micro không dây và 1 máy chiếu phụ tại sảnh đón tiếp đại biểu.');
-  }
-
-  const score = Math.max(30, 100 - missingItems.length * 15 - riskItems.length * 20);
+  const levelBg = (level: 'INFO' | 'WARNING' | 'ERROR') => {
+    if (level === 'ERROR') return 'bg-rose-50 border-rose-200 text-rose-900';
+    if (level === 'WARNING') return 'bg-amber-50 border-amber-200 text-amber-900';
+    return 'bg-blue-50 border-blue-200 text-blue-900';
+  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#062c51] via-[#075ea1] to-[#0b4379] rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Trợ lý AI Thông minh
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Trợ lý AI Rà soát
             </span>
-            <span className="text-xs text-slate-400 font-medium">Chế độ phân tích tự động</span>
+            <span className="text-xs text-blue-100 font-medium">Hệ thống thẩm định tự động theo Quy chế số 184/QĐ-ĐHKT</span>
           </div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Rà soát Hồ sơ & Gợi ý Cơ sở vật chất</h1>
-          <p className="text-slate-300 text-xs md:text-sm mt-1 max-w-xl">
-            Sử dụng mô hình luật kết hợp AI để phát hiện thiếu sót, kiểm tra tính hợp lý của ngân sách và đề xuất giải pháp phòng tối ưu
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Rà soát Hồ sơ & Cảnh báo Xung đột Quy chế</h1>
+          <p className="text-blue-100 text-xs md:text-sm mt-1 max-w-xl">
+            Tự động kiểm tra tính đầy đủ, phát hiện trùng lịch cơ sở vật chất, thẩm định định mức tài chính và đề xuất cải thiện trước khi trình cấp duyệt.
           </p>
         </div>
 
         <button
-          onClick={runAnalysis}
-          disabled={isAnalyzing}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer self-start md:self-auto"
+          onClick={() => runAnalysis(selectedEventId)}
+          disabled={isAnalyzing || !selectedEventId}
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-400 disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer self-start md:self-auto"
         >
-          <Sparkles className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
           <span>{isAnalyzing ? 'Đang phân tích...' : 'Chạy lại rà soát'}</span>
         </button>
       </div>
 
-      {/* Select Event */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between shadow-2xs">
-        <label className="text-xs font-semibold text-slate-700">Chọn hồ sơ sự kiện cần thẩm định:</label>
-        <select
-          value={selectedEventId}
-          onChange={(e) => setSelectedEventId(e.target.value)}
-          className="text-xs p-2 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-800"
-        >
-          {events.map((ev) => (
-            <option key={ev.id} value={ev.id}>
-              {ev.eventCode} — {ev.title} ({ev.organizingUnit})
-            </option>
-          ))}
-        </select>
+      {/* Select Event & Info Banner */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <FileText className="w-4 h-4 text-blue-600" /> Chọn hồ sơ sự kiện cần thẩm định:
+          </label>
+          <select
+            value={selectedEventId}
+            onChange={(e) => handleSelectEvent(e.target.value)}
+            className="text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-md w-full"
+          >
+            {events.length === 0 && <option value="">-- Chưa có hồ sơ nào --</option>}
+            {events.map((ev) => (
+              <option key={ev.id} value={ev.id}>
+                [{ev.eventCode}] {ev.title} ({ev.organizingUnit})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Selected Event Quick Info */}
+        {selectedEvent && (
+          <div className="pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="flex items-center gap-2 text-slate-600">
+              <Building className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="truncate">{selectedEvent.organizingUnit}</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600">
+              <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="truncate">{formatDate(selectedEvent.startDate)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600">
+              <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="truncate">{selectedEvent.preferredVenue || 'Chưa chọn hội trường'}</span>
+            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-2">
+              {(() => {
+                const st = (statusLabels as any)[selectedEvent.status];
+                return (
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${st ? `${st.bg} ${st.color} ${st.border}` : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                    {st?.label || selectedEvent.status}
+                  </span>
+                );
+              })()}
+              <button
+                onClick={() => navigate(`/events/${selectedEvent.id}`)}
+                className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
+                title="Xem hồ sơ chi tiết"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {event && (
+      {/* Error state */}
+      {error && (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-start gap-3 text-sm text-rose-800">
+          <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold">Không thể phân tích hồ sơ</p>
+            <p className="text-xs mt-1">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {isAnalyzing && !result && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-pulse">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 h-72" />
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 h-72" />
+        </div>
+      )}
+
+      {/* Results */}
+      {result && !isAnalyzing && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Score & Summary */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
             <div>
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Điểm chuẩn bị hồ sơ:
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <span>Điểm chuẩn bị hồ sơ</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold lowercase">
+                  thang 100
+                </span>
               </div>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-5xl font-black text-blue-600">{score}</span>
+
+              <div className="flex items-baseline gap-2 mt-3">
+                <span className={`text-5xl font-black ${score >= 80 ? 'text-emerald-600' : score >= 60 ? 'text-amber-500' : 'text-rose-600'}`}>
+                  {score}
+                </span>
                 <span className="text-slate-400 font-bold">/ 100</span>
               </div>
+
               <div className="mt-3">
-                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
+                    className={`h-full rounded-full transition-all duration-700 ${
                       score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-amber-500' : 'bg-rose-500'
                     }`}
                     style={{ width: `${score}%` }}
                   />
                 </div>
               </div>
-              <div className="text-xs text-slate-600 mt-4 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-                {score >= 80
-                  ? 'Hồ sơ đạt tiêu chuẩn, có cấu trúc chi tiết, sẵn sàng trình BCN Khoa và Đoàn trường phê duyệt.'
-                  : 'Hồ sơ còn một số điểm mâu thuẫn hoặc thiếu thông tin quan trọng. Cần hoàn thiện trước khi gửi.'}
+
+              <div className="text-xs text-slate-700 mt-4 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                {result.summary}
               </div>
             </div>
 
-            <div className="p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 text-[11px] text-indigo-900">
-              <span className="font-bold">Ghi chú xác minh:</span> Kết quả được đối chiếu tự động theo Quy chế tổ chức sự kiện sinh viên số 184/QĐ-ĐHKT.
+            <div className="space-y-2">
+              <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-900 flex items-center justify-between">
+                <div>
+                  <span className="font-bold">Động cơ phân tích:</span>
+                  <div className="text-[10px] text-blue-700 mt-0.5">{result.aiProvider || 'Quy chế 184/QĐ-ĐHKT'}</div>
+                </div>
+                {result.isAI && (
+                  <span className="px-2 py-0.5 rounded bg-blue-600 text-white font-bold text-[9px]">
+                    AI ACTIVE
+                  </span>
+                )}
+              </div>
+
+              {selectedEvent && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/events/${selectedEvent.id}`)}
+                    className="flex-1 py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Xem hồ sơ
+                  </button>
+                  <button
+                    onClick={() => navigate(`/events/${selectedEvent.id}/edit`)}
+                    className="flex-1 py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Edit className="w-3.5 h-3.5" /> Chỉnh sửa
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -147,23 +281,30 @@ export const AIReviewPage: React.FC = () => {
           <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-5">
             <h3 className="text-sm font-bold text-slate-900 border-b pb-2 flex items-center justify-between">
               <span>Phân tích tính hợp lệ & Điểm rủi ro</span>
-              <span className="text-xs font-normal text-slate-400">Chi tiết phát hiện</span>
+              <span className="text-xs font-normal text-slate-400">Đối chiếu Quy chế số 184/QĐ-ĐHKT</span>
             </h3>
 
-            {/* Inconsistencies & Risks */}
+            {/* Inconsistencies & Conflict Risks */}
             <div>
               <div className="text-xs font-bold text-rose-700 flex items-center gap-1.5 mb-2">
-                <ShieldAlert className="w-4 h-4" /> Các rủi ro & Mâu thuẫn phát hiện ({riskItems.length})
+                <ShieldAlert className="w-4 h-4" /> Các rủi ro & Mâu thuẫn phát hiện ({(result.risks?.length || 0) + (result.inconsistencies?.length || 0)})
               </div>
-              {riskItems.length === 0 ? (
-                <div className="text-xs text-slate-400 p-2.5 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-100 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Không phát hiện rủi ro nghiêm trọng về an toàn hoặc ngân sách
+              {(result.risks?.length || 0) + (result.inconsistencies?.length || 0) === 0 ? (
+                <div className="text-xs p-3 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-100 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Không phát hiện mâu thuẫn hoặc rủi ro nghiêm trọng về an toàn và hội trường</span>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {riskItems.map((risk, i) => (
-                    <div key={i} className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  {result.inconsistencies?.map((item, i) => (
+                    <div key={`inc-${i}`} className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2">
+                      <XCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                  {result.risks?.map((risk, i) => (
+                    <div key={`risk-${i}`} className="p-3 bg-orange-50 border border-orange-200 rounded-xl text-xs text-orange-900 flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
                       <span>{risk}</span>
                     </div>
                   ))}
@@ -174,16 +315,17 @@ export const AIReviewPage: React.FC = () => {
             {/* Missing Info */}
             <div>
               <div className="text-xs font-bold text-amber-700 flex items-center gap-1.5 mb-2">
-                <AlertTriangle className="w-4 h-4" /> Thông tin còn thiếu ({missingItems.length})
+                <AlertTriangle className="w-4 h-4" /> Thông tin còn thiếu ({result.missingFields?.length || 0})
               </div>
-              {missingItems.length === 0 ? (
-                <div className="text-xs text-slate-400 p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Các trường bắt buộc đã được điền đầy đủ
+              {(result.missingFields?.length || 0) === 0 ? (
+                <div className="text-xs p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2 text-slate-700">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Các trường thông tin bắt buộc đã được điền đầy đủ</span>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {missingItems.map((item, i) => (
-                    <div key={i} className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
+                  {result.missingFields?.map((item, i) => (
+                    <div key={i} className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </div>
@@ -195,17 +337,45 @@ export const AIReviewPage: React.FC = () => {
             {/* AI Recommendations */}
             <div>
               <div className="text-xs font-bold text-indigo-700 flex items-center gap-1.5 mb-2">
-                <Sparkles className="w-4 h-4" /> Đề xuất cải tiến ({suggestions.length})
+                <Sparkles className="w-4 h-4" /> Đề xuất cải tiến ({result.suggestions?.length || 0})
               </div>
-              <div className="space-y-2">
-                {suggestions.map((sug, i) => (
-                  <div key={i} className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                    <span>{sug}</span>
-                  </div>
-                ))}
-              </div>
+              {(result.suggestions?.length || 0) === 0 ? (
+                <div className="text-xs p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2 text-slate-700">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Hồ sơ đã đạt tiêu chuẩn, không có đề xuất bổ sung</span>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {result.suggestions?.map((sug, i) => (
+                    <div key={i} className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                      <span>{sug}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Detailed Check Log */}
+      {result && result.details && result.details.length > 0 && !isAnalyzing && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center justify-between border-b pb-2 mb-4">
+            <h3 className="text-sm font-bold text-slate-900">Nhật ký kiểm tra chi tiết theo từng danh mục</h3>
+            <span className="text-xs text-slate-400 font-medium">{result.details.length} mục kiểm tra</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {result.details.map((d, i) => (
+              <div key={i} className={`p-3 rounded-xl border text-xs flex items-start gap-2.5 ${levelBg(d.level)}`}>
+                {levelIcon(d.level)}
+                <div className="leading-relaxed">
+                  <span className="font-bold mr-1">[{d.category}]</span>
+                  <span>{d.message}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
