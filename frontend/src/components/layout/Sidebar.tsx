@@ -113,9 +113,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
   const renderContent = (isMobile = false) => (
     <div className="flex flex-col h-full">
       {/* Brand Header: Logo DUE + 2 dòng tên trường theo nhận diện chính thức */}
-      <div className="p-3.5 border-b border-[#002B52] flex items-center justify-between gap-2 shrink-0">
+      <div className="p-3.5 bg-white border-b border-slate-200 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-9 h-9 flex items-center justify-center shrink-0">
             <img
               src="/images/due_logo_emblem.png"
               alt="Logo DUE"
@@ -126,14 +126,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
             />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-bold tracking-wider text-blue-200/90 uppercase leading-none truncate">
+            <div className="text-[10px] font-bold tracking-wider text-[#005FAF] uppercase leading-tight whitespace-nowrap">
               ĐẠI HỌC ĐÀ NẴNG
             </div>
-            <div className="text-xs font-bold text-white tracking-tight leading-tight mt-0.5 truncate">
+            <div className="text-xs font-bold text-[#005FAF] tracking-tight leading-tight mt-0.5 whitespace-nowrap">
               TRƯỜNG ĐH KINH TẾ
-            </div>
-            <div className="text-[9px] text-blue-200/80 leading-none mt-1 truncate">
-              Quản lý quy trình sự kiện
             </div>
           </div>
         </div>
