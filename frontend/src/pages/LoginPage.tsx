@@ -190,7 +190,7 @@ export const LoginPage: React.FC = () => {
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(180deg, rgba(24,80,117,0.1) 0%, rgba(14,58,89,0.7) 50%, rgba(10,45,70,0.95) 100%)',
+                'linear-gradient(180deg, rgba(0,95,175,0.12) 0%, rgba(0,61,112,0.72) 50%, rgba(0,43,82,0.95) 100%)',
             }}
           />
           <div className="relative z-10 flex flex-col justify-end h-full p-8 xl:p-10 text-white">
@@ -219,10 +219,10 @@ export const LoginPage: React.FC = () => {
                 alt="Logo DUE"
                 className="h-14 sm:h-16 w-auto object-contain mx-auto"
               />
-              <div className="text-[11px] sm:text-xs font-bold tracking-widest text-[#005597]/80 uppercase mt-3">
+              <div className="text-[11px] sm:text-xs font-bold tracking-widest text-[#005FAF]/80 uppercase mt-3">
                 ĐẠI HỌC ĐÀ NẴNG
               </div>
-              <h2 className="text-center font-bold text-sm sm:text-base tracking-wide text-[#005597] mt-0.5 uppercase">
+              <h2 className="text-center font-bold text-sm sm:text-base tracking-wide text-[#005FAF] mt-0.5 uppercase">
                 TRƯỜNG ĐẠI HỌC KINH TẾ
               </h2>
               <p className="text-center text-xs sm:text-sm text-slate-500 font-medium mt-1">
@@ -258,8 +258,8 @@ export const LoginPage: React.FC = () => {
                       className={`w-full px-3.5 py-2.5 text-sm text-slate-800
                         placeholder-slate-400 bg-white rounded-lg border transition-all
                         ${emailError
-                          ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20'
-                          : 'border-slate-300 focus:outline-none focus:border-[#075ea1] focus:ring-2 focus:ring-[#075ea1]/20'
+                          ? 'border-[#F37021] ring-2 ring-[#F37021]/20'
+                          : 'border-slate-300 focus:outline-none focus:border-[#005FAF] focus:ring-2 focus:ring-[#005FAF]/20'
                         }
                         ${hasAccounts ? 'pr-9' : ''}`}
                     />
@@ -359,7 +359,7 @@ export const LoginPage: React.FC = () => {
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-semibold text-[#005597] hover:text-[#003e6e] hover:underline"
+                    className="text-xs font-semibold text-[#005FAF] hover:text-[#003e6e] hover:underline"
                   >
                     Quên mật khẩu?
                   </Link>
@@ -378,7 +378,7 @@ export const LoginPage: React.FC = () => {
                       placeholder-slate-400 bg-white rounded-lg border transition-all
                       ${passwordError
                         ? 'border-[#b74245] ring-2 ring-[#b74245]/20'
-                        : 'border-slate-300 focus:outline-none focus:border-[#075ea1] focus:ring-2 focus:ring-[#075ea1]/20'
+                        : 'border-slate-300 focus:outline-none focus:border-[#005FAF] focus:ring-2 focus:ring-[#005FAF]/20'
                       }`}
                   />
                   <button
@@ -403,8 +403,8 @@ export const LoginPage: React.FC = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#075ea1] focus:ring-[#075ea1]
-                      border-slate-300 accent-[#075ea1] cursor-pointer"
+                    className="w-4 h-4 rounded text-[#005FAF] focus:ring-[#005FAF]
+                      border-slate-300 accent-[#005FAF] cursor-pointer"
                   />
                   <span className="text-xs sm:text-sm text-slate-600">
                     Ghi nhớ đăng nhập trên thiết bị này
@@ -425,7 +425,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full py-2.5 px-4 bg-[#005597] hover:bg-[#004377] text-white rounded-lg
+                  className="w-full py-2.5 px-4 bg-[#005FAF] hover:bg-[#004A8A] text-white rounded-lg
                     text-sm font-semibold transition-all shadow-sm flex items-center
                     justify-center min-h-[42px] cursor-pointer disabled:opacity-60"
                 >
@@ -439,7 +439,7 @@ export const LoginPage: React.FC = () => {
                   Chưa có tài khoản?{' '}
                   <Link
                     to="/register"
-                    className="font-semibold text-[#005597] hover:text-[#004377] hover:underline inline-flex items-center gap-1"
+                    className="font-semibold text-[#005FAF] hover:text-[#004A8A] hover:underline inline-flex items-center gap-1"
                   >
                     Đăng ký tài khoản mới
                   </Link>

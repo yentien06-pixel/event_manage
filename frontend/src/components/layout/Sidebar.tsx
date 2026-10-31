@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
   const renderContent = (isMobile = false) => (
     <div className="flex flex-col h-full">
       {/* Brand Header: Logo DUE + 2 dòng tên trường theo nhận diện chính thức */}
-      <div className="p-3.5 border-b border-[#04203b] flex items-center justify-between gap-2 shrink-0">
+      <div className="p-3.5 border-b border-[#002B52] flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
             <img
@@ -132,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
             <div className="text-xs font-bold text-white tracking-tight leading-tight mt-0.5 truncate">
               TRƯỜNG ĐH KINH TẾ
             </div>
-            <div className="text-[9px] text-blue-300/80 leading-none mt-1 truncate">
+            <div className="text-[9px] text-blue-200/80 leading-none mt-1 truncate">
               Quản lý quy trình sự kiện
             </div>
           </div>
@@ -142,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
           <button
             onClick={onClose}
             aria-label="Đóng thanh điều hướng"
-            className="p-1 rounded-lg text-blue-300 hover:text-white hover:bg-blue-900/60 transition-colors shrink-0 cursor-pointer"
+            className="p-1 rounded-lg text-blue-200 hover:text-white hover:bg-[#004A8A]/80 transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -153,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
       <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1">
         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/70 flex items-center justify-between mb-1">
           <span>Quyền hạn vai trò</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/80 text-blue-200 font-bold border border-blue-400/30">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#002B52]/80 text-blue-100 font-bold border border-blue-300/30">
             {currentUser.role}
           </span>
         </div>
@@ -171,8 +171,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
               className={({ isActive }) =>
                 `flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-[#075ea1] text-white shadow-xs font-semibold"
-                    : "text-slate-200 hover:bg-[#0b4379]/70 hover:text-white"
+                    ? "bg-[#005FAF] text-white shadow-xs font-semibold"
+                    : "text-slate-200 hover:bg-[#004A8A]/70 hover:text-white"
                 }`
               }
             >
@@ -181,12 +181,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 <span className="truncate">{item.label}</span>
               </div>
               {item.badge !== undefined && (
-                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-[#ea580c] text-white min-w-4 text-center shrink-0">
+                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-[#F37021] text-white min-w-4 text-center shrink-0">
                   {item.badge}
                 </span>
               )}
               {item.badgeText && (
-                <span className="px-1 py-0.2 text-[9px] font-bold rounded-md bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 shrink-0">
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded-md bg-[#005FAF]/40 text-blue-100 border border-blue-300/30 shrink-0">
                   {item.badgeText}
                 </span>
               )}
@@ -210,7 +210,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                   }}
                   className={({ isActive }) =>
                     `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
-                      isActive ? "bg-[#075ea1] text-white font-semibold" : "text-slate-200 hover:bg-[#0b4379]/70 hover:text-white"
+                      isActive ? "bg-[#005FAF] text-white font-semibold" : "text-slate-200 hover:bg-[#004A8A]/70 hover:text-white"
                     }`
                   }
                 >
@@ -228,7 +228,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
   return (
     <>
       {/* ── Desktop Fixed Sidebar (Visible on >= 1024px) ── */}
-      <aside className="hidden lg:flex w-60 xl:w-64 bg-[#062c51] text-slate-200 flex-col shrink-0 h-screen border-r border-[#04203b] z-30 select-none overflow-hidden">
+      <aside className="hidden lg:flex w-60 xl:w-64 bg-[#003D70] text-slate-200 flex-col shrink-0 h-screen border-r border-[#002B52] z-30 select-none overflow-hidden">
         {renderContent(false)}
       </aside>
 
@@ -241,7 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
             onClick={onClose}
           />
           {/* Drawer Slide-out */}
-          <div className="relative w-64 max-w-[80vw] bg-[#062c51] text-slate-200 flex flex-col h-full shadow-2xl z-10 select-none">
+          <div className="relative w-64 max-w-[80vw] bg-[#003D70] text-slate-200 flex flex-col h-full shadow-2xl z-10 select-none">
             {renderContent(true)}
           </div>
         </div>

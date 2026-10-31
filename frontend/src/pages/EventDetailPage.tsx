@@ -80,7 +80,7 @@ export const EventDetailPage: React.FC = () => {
 
   const getActionStyle = (action: string) => {
     if (['APPROVE', 'CONFIRM', 'ACCEPT', 'READY', 'HANDOVER', 'SETTLE', 'COMPLETE'].includes(action)) {
-      return 'bg-[#0E9045] hover:bg-[#0A6D34] text-white shadow-xs';
+      return 'bg-[#009444] hover:bg-[#007A38] text-white shadow-xs';
     }
     if (['REQUEST_REVISION', 'ADJUST', 'SUBMIT_DOCUMENTS', 'PROCEED_BUDGET'].includes(action)) {
       return 'bg-[#FE751E] hover:bg-[#D45B0E] text-white shadow-xs';
@@ -88,7 +88,7 @@ export const EventDetailPage: React.FC = () => {
     if (['REJECT', 'CONFLICT', 'INCIDENT', 'REJECT_PAYMENT', 'CANCEL'].includes(action)) {
       return 'bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-xs';
     }
-    return 'bg-[#075F9F] hover:bg-[#054877] text-white shadow-xs';
+    return 'bg-[#005FAF] hover:bg-[#004A8A] text-white shadow-xs';
   };
 
   const actionLabels: Record<string, string> = {
@@ -148,7 +148,7 @@ export const EventDetailPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(`/ai-review?eventId=${event.id}`)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 text-[#D45F1A] hover:bg-orange-100 border border-orange-200 text-xs font-semibold transition-colors cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Rà soát AI</span>
@@ -211,7 +211,7 @@ export const EventDetailPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Building className="w-4 h-4 text-purple-600" />
+            <Building className="w-4 h-4 text-[#F37021]" />
             <div>
               <div className="text-[10px] text-slate-400">Địa điểm dự kiến</div>
               <div className="font-semibold text-slate-800 truncate max-w-[180px]">{event.preferredVenue}</div>
@@ -697,7 +697,7 @@ export const EventDetailPage: React.FC = () => {
       {availableActions.length > 0 && (
         <div className="sticky bottom-4 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl py-3 px-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#075F9F] animate-pulse shrink-0" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#005FAF] animate-pulse shrink-0" />
             <span className="text-xs font-bold text-slate-700">
               Thao tác nhanh cho {roleNames[currentUser.role]}:
             </span>

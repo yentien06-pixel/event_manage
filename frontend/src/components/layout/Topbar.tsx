@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Bell,
@@ -18,15 +18,59 @@ interface TopbarProps {
   onToggleSidebar?: () => void;
 }
 
+type HeaderMenu = 'notif' | 'user' | null;
+
 export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, switchUser, allUsers, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { notifications, markNotificationAsRead, markAllNotificationsAsRead, events } = useEvents();
 
-  const [showNotifMenu, setShowNotifMenu] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [openMenu, setOpenMenu] = useState<HeaderMenu>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const notifRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
+
+  const showNotifMenu = openMenu === 'notif';
+  const showUserMenu = openMenu === 'user';
+
+  const closeMenus = useCallback(() => setOpenMenu(null), []);
+
+  const toggleMenu = useCallback((menu: Exclude<HeaderMenu, null>) => {
+    setOpenMenu((current) => (current === menu ? null : menu));
+  }, []);
+
+  // Đóng dropdown khi click/chạm ra ngoài vùng nút + panel
+  useEffect(() => {
+    if (!openMenu) return;
+
+    const handlePointerOutside = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (openMenu === 'notif' && notifRef.current && !notifRef.current.contains(target)) {
+        setOpenMenu(null);
+      }
+      if (openMenu === 'user' && userRef.current && !userRef.current.contains(target)) {
+        setOpenMenu(null);
+      }
+    };
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenMenu(null);
+    };
+
+    document.addEventListener('pointerdown', handlePointerOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [openMenu]);
+
+  // Đóng dropdown khi chuyển trang
+  useEffect(() => {
+    setOpenMenu(null);
+  }, [location.pathname]);
 
   const unreadNotifs = notifications.filter((n) => !n.isRead);
 
@@ -96,7 +140,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
             <React.Fragment key={idx}>
               {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0 hidden sm:block" />}
               {crumb.path ? (
-                <Link to={crumb.path} className="hover:text-[#075F9F] transition-colors truncate hidden sm:inline">
+                <Link to={crumb.path} className="hover:text-[#005FAF] transition-colors truncate hidden sm:inline">
                   {crumb.label}
                 </Link>
               ) : (
@@ -115,7 +159,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
           placeholder="Tìm kiếm sự kiện, mã hồ sơ, đơn vị..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl pl-9 pr-4 py-2 focus:outline-hidden focus:bg-white focus:border-[#075F9F] focus:ring-1 focus:ring-[#075F9F] transition-all"
+          className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl pl-9 pr-4 py-2 focus:outline-hidden focus:bg-white focus:border-[#005FAF] focus:ring-1 focus:ring-[#005FAF] transition-all"
         />
 
         {searchQuery.trim() && (
@@ -133,7 +177,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
                   className="p-2 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#075F9F]">{ev.eventCode}</span>
+                    <span className="text-xs font-bold text-[#005FAF]">{ev.eventCode}</span>
                     <span className="text-[10px] text-slate-400">{ev.organizingUnit}</span>
                   </div>
                   <div className="text-xs font-medium text-slate-800 line-clamp-1 mt-0.5">{ev.title}</div>
@@ -147,10 +191,14 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
       {/* Right: Actions và User Menu */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Notifications Bell */}
-        <div className="relative">
+        <div className="relative" ref={notifRef}>
           <button
-            onClick={() => setShowNotifMenu(!showNotifMenu)}
+            type="button"
+            onClick={() => toggleMenu('notif')}
             aria-label="Thông báo hệ thống"
+            aria-haspopup="menu"
+            aria-expanded={showNotifMenu}
+            aria-controls="header-notif-menu"
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-600 transition-colors relative cursor-pointer"
           >
             <Bell className="w-4 h-4" />
@@ -162,13 +210,18 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
           </button>
 
           {showNotifMenu && (
-            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
-              <div className="p-3.5 bg-[#0B1727] text-white flex items-center justify-between">
+            <div
+              id="header-notif-menu"
+              role="menu"
+              className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden"
+            >
+              <div className="p-3.5 bg-[#003D70] text-white flex items-center justify-between">
                 <div className="text-xs font-bold uppercase tracking-wider">Thông báo hệ thống</div>
                 {unreadNotifs.length > 0 && (
                   <button
+                    type="button"
                     onClick={markAllNotificationsAsRead}
-                    className="text-[11px] text-blue-300 hover:text-white flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-blue-200 hover:text-white flex items-center gap-1 cursor-pointer"
                   >
                     <CheckCheck className="w-3.5 h-3.5" /> Đã đọc hết
                   </button>
@@ -181,10 +234,11 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
                   notifications.slice(0, 8).map((n) => (
                     <div
                       key={n.id}
+                      role="menuitem"
                       onClick={() => {
                         markNotificationAsRead(n.id);
+                        closeMenus();
                         navigate(n.linkUrl);
-                        setShowNotifMenu(false);
                       }}
                       className={`p-3 text-left hover:bg-slate-50 cursor-pointer transition-colors ${
                         !n.isRead ? 'bg-blue-50/50' : ''
@@ -192,7 +246,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-bold text-slate-800">{n.title}</span>
-                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-[#075F9F] shrink-0" />}
+                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-[#005FAF] shrink-0" />}
                       </div>
                       <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{n.content}</p>
                       <span className="text-[10px] text-slate-400 mt-1 block">{formatDateTime(n.createdAt)}</span>
@@ -205,61 +259,51 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
         </div>
 
         {/* User Profile Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={userRef}>
           <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
+            type="button"
+            onClick={() => toggleMenu('user')}
+            aria-label="Menu tài khoản"
+            aria-haspopup="menu"
+            aria-expanded={showUserMenu}
+            aria-controls="header-user-menu"
             className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2 pr-2 sm:pr-3 py-1 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors border border-slate-200/60 cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-lg bg-[#075F9F] text-white flex items-center justify-center font-bold text-xs">
+            <div className="w-7 h-7 rounded-lg bg-[#005FAF] text-white flex items-center justify-center font-bold text-xs">
               {currentUser.fullName ? currentUser.fullName.charAt(0) : 'U'}
             </div>
             <div className="text-left hidden sm:block">
               <div className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px]">{currentUser.fullName}</div>
-              <div className="text-[10px] text-[#075F9F] font-semibold">{currentUser.role}</div>
+              <div className="text-[10px] text-[#005FAF] font-semibold">{currentUser.role}</div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-2xl p-2 z-50">
-              <div className="p-3 border-b border-slate-100 mb-1">
+            <div
+              id="header-user-menu"
+              role="menu"
+              className="absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl border border-slate-200 shadow-2xl p-2 z-50"
+            >
+              <div className="p-3 border-b border-slate-100">
                 <div className="text-xs font-bold text-slate-900">{currentUser.fullName}</div>
                 <div className="text-[11px] text-slate-500">{currentUser.email}</div>
-                <div className="text-[11px] text-[#075F9F] font-semibold mt-1">{currentUser.department}</div>
+                <div className="text-[11px] text-[#005FAF] font-semibold mt-1">
+                  {currentUser.role}
+                  {currentUser.department ? ` · ${currentUser.department}` : ''}
+                </div>
               </div>
 
-              <div className="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
-                Đổi tài khoản kiểm thử:
-              </div>
-              <div className="space-y-0.5 max-h-48 overflow-y-auto">
-                {allUsers
-                  .filter((u) => Boolean(u.role))
-                  .map((u) => (
-                    <button
-                      key={u.id}
-                      onClick={() => {
-                        switchUser(u.role);
-                        setShowUserMenu(false);
-                      }}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between cursor-pointer ${
-                        u.role === currentUser.role
-                          ? 'bg-blue-50 text-[#075F9F] font-bold'
-                          : 'text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className="truncate">{u.fullName}</span>
-                      <span className="text-[10px] font-semibold text-slate-400 shrink-0 ml-1">{u.role}</span>
-                    </button>
-                  ))}
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 mt-1">
+              <div className="pt-1">
                 <button
+                  type="button"
+                  role="menuitem"
                   onClick={() => {
+                    closeMenus();
                     logout();
                     navigate('/login');
                   }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer"
+                  className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Đăng xuất</span>

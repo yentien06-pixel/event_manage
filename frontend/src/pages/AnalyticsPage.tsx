@@ -50,10 +50,10 @@ export const AnalyticsPage: React.FC = () => {
     }));
 
   const pieData = [
-    { name: 'Phê duyệt', value: approved, color: '#10b981' },
-    { name: 'Yêu cầu sửa', value: revision, color: '#f59e0b' },
-    { name: 'Từ chối', value: rejected, color: '#ef4444' },
-    { name: 'Đang xử lý / Nháp', value: total - approved - revision - rejected, color: '#6366f1' },
+    { name: 'Phê duyệt', value: approved, color: '#009444' },
+    { name: 'Yêu cầu sửa', value: revision, color: '#F37021' },
+    { name: 'Từ chối', value: rejected, color: '#DC2626' },
+    { name: 'Đang xử lý / Nháp', value: total - approved - revision - rejected, color: '#005FAF' },
   ];
 
   // Export CSV
@@ -124,8 +124,8 @@ export const AnalyticsPage: React.FC = () => {
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
           <div className="text-xs text-slate-500 font-medium">Tỷ lệ Giải quyết Trùng phòng</div>
-          <div className="text-3xl font-black text-purple-600 mt-1">100%</div>
-          <div className="text-[11px] text-purple-700 mt-1 flex items-center gap-1">
+          <div className="text-3xl font-black text-[#F37021] mt-1">100%</div>
+          <div className="text-[11px] text-[#D45F1A] mt-1 flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5" /> Tự động cảnh báo trước 100%
           </div>
         </div>
@@ -142,7 +142,7 @@ export const AnalyticsPage: React.FC = () => {
                 <XAxis dataKey="unit" stroke="#94a3b8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                 <Tooltip />
-                <Bar dataKey="avgDays" fill="#3b82f6" name="Thực tế (ngày)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="avgDays" fill="#005FAF" name="Thực tế (ngày)" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="targetDays" fill="#cbd5e1" name="Định mức (ngày)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

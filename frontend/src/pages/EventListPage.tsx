@@ -73,10 +73,10 @@ export const EventListPage: React.FC = () => {
         {['BTC', 'ADMIN'].includes(currentUser.role) && (
           <button
             onClick={() => navigate('/events/create')}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#075ea1] hover:bg-[#054877] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer self-start sm:self-auto min-h-[38px]"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#005FAF] hover:bg-[#004A8A] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer self-start sm:self-auto min-h-[38px]"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Tạo hồ sơ mới (5 bước)</span>
+            <span>Tạo hồ sơ</span>
           </button>
         )}
       </div>
@@ -87,7 +87,7 @@ export const EventListPage: React.FC = () => {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Lọc theo trạng thái hồ sơ"
-          className="w-full bg-white border border-slate-200 text-slate-800 font-semibold text-xs rounded-xl px-3 py-2.5 shadow-2xs focus:outline-hidden focus:border-[#075ea1]"
+          className="w-full bg-white border border-slate-200 text-slate-800 font-semibold text-xs rounded-xl px-3 py-2.5 shadow-2xs focus:outline-hidden focus:border-[#005FAF]"
         >
           <option value="ALL">Tất cả hồ sơ ({countAll})</option>
           <option value="PENDING">Chờ xét duyệt ({countPending})</option>
@@ -110,7 +110,7 @@ export const EventListPage: React.FC = () => {
             onClick={() => setStatusFilter(tab.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === tab.key
-                ? 'bg-[#075ea1] text-white shadow-xs'
+                ? 'bg-[#005FAF] text-white shadow-xs'
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
             }`}
           >
@@ -137,7 +137,7 @@ export const EventListPage: React.FC = () => {
               placeholder="Tìm kiếm theo mã hồ sơ, tên sự kiện, đơn vị..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-hidden focus:bg-white focus:border-[#075ea1] focus:ring-1 focus:ring-[#075ea1]"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-hidden focus:bg-white focus:border-[#005FAF] focus:ring-1 focus:ring-[#005FAF]"
             />
           </div>
 
@@ -146,7 +146,7 @@ export const EventListPage: React.FC = () => {
             value={unitFilter}
             onChange={(e) => setUnitFilter(e.target.value)}
             aria-label="Lọc theo đơn vị tổ chức"
-            className="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-2 focus:outline-hidden focus:border-[#075ea1] cursor-pointer max-w-full sm:max-w-[200px] truncate"
+            className="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-2 focus:outline-hidden focus:border-[#005FAF] cursor-pointer max-w-full sm:max-w-[200px] truncate"
           >
             <option value="ALL">Tất cả đơn vị tổ chức</option>
             {uniqueUnits.map((u) => (
@@ -179,7 +179,7 @@ export const EventListPage: React.FC = () => {
               >
                 {/* Header card: Mã hồ sơ + Badge trạng thái */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-xs font-bold text-[#075ea1] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  <span className="font-mono text-xs font-bold text-[#005FAF] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                     {ev.eventCode}
                   </span>
                   <span
@@ -212,7 +212,7 @@ export const EventListPage: React.FC = () => {
                       e.stopPropagation();
                       navigate(`/events/${ev.id}`);
                     }}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#075ea1] text-xs font-semibold cursor-pointer border border-blue-200 transition-colors"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#005FAF] text-xs font-semibold cursor-pointer border border-blue-200 transition-colors"
                     title="Xem chi tiết hồ sơ"
                   >
                     <Eye className="w-3.5 h-3.5" />
@@ -255,14 +255,14 @@ export const EventListPage: React.FC = () => {
                       onClick={() => navigate(`/events/${ev.id}`)}
                       className="hover:bg-blue-50/40 transition-colors cursor-pointer group"
                     >
-                      <td className="py-3 px-4 font-mono font-bold text-[#075ea1] whitespace-nowrap">
+                      <td className="py-3 px-4 font-mono font-bold text-[#005FAF] whitespace-nowrap">
                         <span className="bg-blue-50 group-hover:bg-white px-2 py-0.5 rounded border border-blue-200 text-xs">
                           {ev.eventCode}
                         </span>
                       </td>
 
                       <td className="py-3 px-4 max-w-sm">
-                        <div className="font-bold text-slate-900 group-hover:text-[#075ea1] line-clamp-2 transition-colors">
+                        <div className="font-bold text-slate-900 group-hover:text-[#005FAF] line-clamp-2 transition-colors">
                           {ev.title}
                         </div>
                       </td>
@@ -291,7 +291,7 @@ export const EventListPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => navigate(`/events/${ev.id}`)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[#075ea1] bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-semibold transition-colors cursor-pointer"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[#005FAF] bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-semibold transition-colors cursor-pointer"
                             title="Xem chi tiết hồ sơ"
                           >
                             <Eye className="w-3.5 h-3.5" />

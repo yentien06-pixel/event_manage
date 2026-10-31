@@ -891,7 +891,7 @@ export const EventCreatePage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 px-4 py-2.5 bg-[#075F9F] hover:bg-[#054877] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-[#005FAF] hover:bg-[#004A8A] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
               >
                 Tiếp tục <ArrowRight className="w-4 h-4" />
               </button>
@@ -909,7 +909,7 @@ export const EventCreatePage: React.FC = () => {
                   type="button"
                   disabled={saving}
                   onClick={() => handleSave(true)}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-[#0E9045] hover:bg-[#0A6D34] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-[#009444] hover:bg-[#007A38] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[40px]"
                 >
                   <Send className="w-4 h-4" /> Nộp hồ sơ chính thức
                 </button>

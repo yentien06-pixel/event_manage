@@ -148,12 +148,12 @@ export const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
         }}
         className={`flex items-center justify-between w-full min-h-[42px] px-3.5 py-1.5 bg-white border rounded-xl transition-all cursor-pointer ${
           isOpen
-            ? 'border-[#005597] ring-2 ring-[#005597]/20 bg-white'
+            ? 'border-[#005FAF] ring-2 ring-[#005FAF]/20 bg-white'
             : 'border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-white'
         } ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100' : ''}`}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
-          <CalendarDays className="w-4 h-4 text-[#005597] shrink-0" />
+          <CalendarDays className="w-4 h-4 text-[#005FAF] shrink-0" />
 
           {isOpen ? (
             <input
@@ -169,7 +169,7 @@ export const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
           ) : selectedOption ? (
             <div className="flex items-center gap-2 truncate min-w-0">
               {selectedOption.code && (
-                <span className="px-1.5 py-0.5 rounded bg-blue-50 text-[#005597] font-bold text-[11px] border border-blue-200 shrink-0 font-mono">
+                <span className="px-1.5 py-0.5 rounded bg-blue-50 text-[#005FAF] font-bold text-[11px] border border-blue-200 shrink-0 font-mono">
                   {selectedOption.code}
                 </span>
               )}
@@ -196,7 +196,7 @@ export const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
 
           <ChevronDown
             className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
-              isOpen ? 'rotate-180 text-[#005597]' : ''
+              isOpen ? 'rotate-180 text-[#005FAF]' : ''
             }`}
           />
         </div>
@@ -237,7 +237,7 @@ export const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         {opt.code && (
-                          <span className="px-1.5 py-0.5 rounded bg-blue-100/70 text-[#005597] font-bold text-[10px] font-mono shrink-0">
+                          <span className="px-1.5 py-0.5 rounded bg-blue-100/70 text-[#005FAF] font-bold text-[10px] font-mono shrink-0">
                             {opt.code}
                           </span>
                         )}
@@ -253,7 +253,7 @@ export const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
                     </div>
 
                     {isSelected && (
-                      <Check className="w-4 h-4 text-[#005597] shrink-0" />
+                      <Check className="w-4 h-4 text-[#005FAF] shrink-0" />
                     )}
                   </li>
                 );

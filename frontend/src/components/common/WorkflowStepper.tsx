@@ -43,17 +43,17 @@ export const WorkflowStepper: React.FC<WorkflowStepperProps> = ({ status }) => {
             let icon = <span className="text-[11px] font-bold">{idx + 1}</span>;
 
             if (isCompleted) {
-              circleClass = 'bg-[#0E9045] text-white border-2 border-[#0E9045]';
+              circleClass = 'bg-[#009444] text-white border-2 border-[#009444]';
               icon = <Check className="w-3 h-3 stroke-[3]" />;
             } else if (isCurrent) {
               if (isRejected) {
                 circleClass = 'bg-rose-600 text-white border-2 border-rose-600 ring-2 ring-rose-100';
                 icon = <XCircle className="w-3 h-3" />;
               } else if (isRevision || isConflict) {
-                circleClass = 'bg-amber-500 text-white border-2 border-amber-500 ring-2 ring-amber-100';
+                circleClass = 'bg-[#F37021] text-white border-2 border-[#F37021] ring-2 ring-orange-100';
                 icon = <AlertTriangle className="w-3 h-3" />;
               } else {
-                circleClass = 'bg-[#075ea1] text-white border-2 border-[#075ea1] ring-2 ring-blue-100';
+                circleClass = 'bg-[#005FAF] text-white border-2 border-[#005FAF] ring-2 ring-blue-100';
                 icon = <Clock className="w-3 h-3 animate-pulse" />;
               }
             }
@@ -69,8 +69,8 @@ export const WorkflowStepper: React.FC<WorkflowStepperProps> = ({ status }) => {
                       ? isRejected
                         ? 'text-rose-600 font-bold'
                         : isRevision || isConflict
-                        ? 'text-amber-600 font-bold'
-                        : 'text-[#075ea1] font-bold'
+                        ? 'text-[#F37021] font-bold'
+                        : 'text-[#005FAF] font-bold'
                       : isCompleted
                       ? 'text-slate-700'
                       : 'text-slate-400'

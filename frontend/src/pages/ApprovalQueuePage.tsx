@@ -37,7 +37,7 @@ export const ApprovalQueuePage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#075ea1] border border-blue-200">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#005FAF] border border-blue-200">
               {roleNames[currentUser.role]}
             </span>
             <span className="text-[11px] text-slate-400">Không gian làm việc chuyên trách</span>
@@ -52,8 +52,8 @@ export const ApprovalQueuePage: React.FC = () => {
 
         <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
           <div className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-[#075ea1]" />
-            <span>Đang chờ xử lý: <strong className="text-[#075ea1] font-bold ml-1">{queueEvents.length}</strong> hồ sơ</span>
+            <Clock className="w-3.5 h-3.5 text-[#005FAF]" />
+            <span>Đang chờ xử lý: <strong className="text-[#005FAF] font-bold ml-1">{queueEvents.length}</strong> hồ sơ</span>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ export const ApprovalQueuePage: React.FC = () => {
       {/* Queue Cards / Table */}
       {queueEvents.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-8 sm:p-10 text-center space-y-3 shadow-2xs">
-          <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#0E9045] flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#009444] flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <h3 className="text-sm sm:text-base font-bold text-slate-800">Không có hồ sơ nào đang chờ duyệt</h3>
@@ -70,7 +70,7 @@ export const ApprovalQueuePage: React.FC = () => {
           </p>
           <button
             onClick={() => navigate('/events')}
-            className="mt-1 px-3.5 py-1.5 bg-[#075ea1] hover:bg-[#054877] text-white text-xs font-semibold rounded-lg cursor-pointer shadow-xs transition-all"
+            className="mt-1 px-3.5 py-1.5 bg-[#005FAF] hover:bg-[#004A8A] text-white text-xs font-semibold rounded-lg cursor-pointer shadow-xs transition-all"
           >
             Xem danh sách tất cả hồ sơ
           </button>
@@ -88,7 +88,7 @@ export const ApprovalQueuePage: React.FC = () => {
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-[#075ea1] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                    <span className="font-mono text-xs font-bold text-[#005FAF] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                       {ev.eventCode}
                     </span>
                     <span
@@ -101,7 +101,7 @@ export const ApprovalQueuePage: React.FC = () => {
 
                   <h3
                     onClick={() => navigate(`/events/${ev.id}`)}
-                    className="text-sm sm:text-base font-bold text-slate-900 hover:text-[#075ea1] transition-colors cursor-pointer truncate"
+                    className="text-sm sm:text-base font-bold text-slate-900 hover:text-[#005FAF] transition-colors cursor-pointer truncate"
                   >
                     {ev.title}
                   </h3>
@@ -125,7 +125,7 @@ export const ApprovalQueuePage: React.FC = () => {
                     </span>
                     {totalBudget > 0 && (
                       <span className="font-semibold text-slate-700">
-                        Dự toán: <strong className="text-[#075ea1]">{formatCurrency(totalBudget)}</strong>
+                        Dự toán: <strong className="text-[#005FAF]">{formatCurrency(totalBudget)}</strong>
                       </span>
                     )}
                   </div>
@@ -135,7 +135,7 @@ export const ApprovalQueuePage: React.FC = () => {
                 <div className="flex flex-wrap md:flex-col items-stretch md:items-end gap-1.5 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-2.5 md:pt-0 md:pl-4">
                   <button
                     onClick={() => navigate(`/events/${ev.id}`)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#075ea1] hover:bg-[#054877] text-white rounded-lg text-xs font-bold cursor-pointer shadow-xs transition-all min-h-[34px]"
+                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#005FAF] hover:bg-[#004A8A] text-white rounded-lg text-xs font-bold cursor-pointer shadow-xs transition-all min-h-[34px]"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>Thẩm định ngay</span>
@@ -147,7 +147,7 @@ export const ApprovalQueuePage: React.FC = () => {
                       onClick={() =>
                         transitionEvent(ev.id, 'APPROVE', 'FACULTY_APPROVED', 'Ban Chủ nhiệm Khoa chấp thuận hồ sơ')
                       }
-                      className="flex items-center justify-center gap-1 px-2.5 py-1.5 bg-[#0E9045] hover:bg-[#0A6D34] text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs transition-all disabled:opacity-50"
+                      className="flex items-center justify-center gap-1 px-2.5 py-1.5 bg-[#009444] hover:bg-[#007A38] text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs transition-all disabled:opacity-50"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Duyệt nhanh</span>
@@ -166,7 +166,7 @@ export const ApprovalQueuePage: React.FC = () => {
                             'Đoàn Trường cấp phép tổ chức chính thức'
                           )
                         }
-                        className="flex items-center justify-center gap-1 px-2.5 py-1.5 bg-[#0E9045] hover:bg-[#0A6D34] text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs transition-all disabled:opacity-50"
+                        className="flex items-center justify-center gap-1 px-2.5 py-1.5 bg-[#009444] hover:bg-[#007A38] text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs transition-all disabled:opacity-50"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Cấp phép nhanh</span>

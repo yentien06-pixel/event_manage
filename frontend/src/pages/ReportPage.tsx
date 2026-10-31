@@ -167,7 +167,7 @@ export const ReportPage: React.FC = () => {
             type="button"
             onClick={handleGenerateAIDraft}
             disabled={!selectedEvent}
-            className="min-h-[42px] px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer whitespace-nowrap self-stretch sm:self-auto"
+            className="min-h-[42px] px-4 bg-gradient-to-r from-[#005FAF] to-[#003D70] hover:from-[#1A78CD] hover:to-[#004A8A] disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer whitespace-nowrap self-stretch sm:self-auto"
             title="Sử dụng AI tự động tạo dàn ý báo cáo mẫu từ dữ liệu sự kiện"
           >
             <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
@@ -179,7 +179,7 @@ export const ReportPage: React.FC = () => {
         {selectedEvent && (
           <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs flex items-center justify-between flex-wrap gap-2 text-slate-700">
             <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-[#005597] shrink-0" />
+              <Info className="w-4 h-4 text-[#005FAF] shrink-0" />
               <span>
                 Đơn vị tổ chức: <strong>{selectedEvent.organizingUnit}</strong> | Địa điểm: <strong>{selectedEvent.preferredVenue}</strong>
               </span>
@@ -199,7 +199,7 @@ export const ReportPage: React.FC = () => {
             min={1}
             value={actualAttendees}
             onChange={(e) => setActualAttendees(Number(e.target.value))}
-            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-bold focus:outline-none focus:border-[#005597] focus:bg-white"
+            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-bold focus:outline-none focus:border-[#005FAF] focus:bg-white"
             required
           />
         </div>
@@ -212,7 +212,7 @@ export const ReportPage: React.FC = () => {
             rows={3}
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
-            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005597] focus:bg-white"
+            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005FAF] focus:bg-white"
             placeholder="Mô tả khái quát quá trình diễn ra sự kiện, các mốc thời gian chính..."
             required
           />
@@ -226,7 +226,7 @@ export const ReportPage: React.FC = () => {
             rows={3}
             value={achievements}
             onChange={(e) => setAchievements(e.target.value)}
-            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005597] focus:bg-white"
+            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005FAF] focus:bg-white"
             placeholder="Những mục tiêu đã hoàn thành, số lượng người tham gia, phản hồi từ sinh viên..."
             required
           />
@@ -241,7 +241,7 @@ export const ReportPage: React.FC = () => {
               rows={3}
               value={challenges}
               onChange={(e) => setChallenges(e.target.value)}
-              className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005597] focus:bg-white"
+              className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005FAF] focus:bg-white"
               placeholder="Những hạn chế phát sinh trong khâu tổ chức, CSVC hoặc thời tiết..."
             />
           </div>
@@ -254,7 +254,7 @@ export const ReportPage: React.FC = () => {
               rows={3}
               value={lessonsLearned}
               onChange={(e) => setLessonsLearned(e.target.value)}
-              className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005597] focus:bg-white"
+              className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005FAF] focus:bg-white"
               placeholder="Kinh nghiệm phối hợp, kiểm soát thời gian và truyền thông..."
             />
           </div>
@@ -268,7 +268,7 @@ export const ReportPage: React.FC = () => {
             rows={2}
             value={recommendations}
             onChange={(e) => setRecommendations(e.target.value)}
-            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005597] focus:bg-white"
+            className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-[#005FAF] focus:bg-white"
             placeholder="Các kiến nghị về cơ sở vật chất, thủ tục hoặc kinh phí cho các chương trình sau..."
           />
         </div>
@@ -277,7 +277,7 @@ export const ReportPage: React.FC = () => {
           <button
             type="submit"
             disabled={submitting || !selectedEvent}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#005597] hover:bg-[#004377] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[42px] transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#005FAF] hover:bg-[#004A8A] text-white rounded-xl text-xs font-bold cursor-pointer shadow-xs min-h-[42px] transition-all disabled:opacity-50"
           >
             {submitting ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

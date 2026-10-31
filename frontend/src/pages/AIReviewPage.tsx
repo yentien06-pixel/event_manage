@@ -110,7 +110,7 @@ export const AIReviewPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#062c51] via-[#075ea1] to-[#0b4379] rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#003D70] via-[#005FAF] to-[#004A8A] rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 flex items-center gap-1">
@@ -336,8 +336,8 @@ export const AIReviewPage: React.FC = () => {
 
             {/* AI Recommendations */}
             <div>
-              <div className="text-xs font-bold text-indigo-700 flex items-center gap-1.5 mb-2">
-                <Sparkles className="w-4 h-4" /> Đề xuất cải tiến ({result.suggestions?.length || 0})
+              <div className="text-xs font-bold text-[#005FAF] flex items-center gap-1.5 mb-2">
+                <Sparkles className="w-4 h-4 text-[#F37021]" /> Đề xuất cải tiến ({result.suggestions?.length || 0})
               </div>
               {(result.suggestions?.length || 0) === 0 ? (
                 <div className="text-xs p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2 text-slate-700">
@@ -347,8 +347,8 @@ export const AIReviewPage: React.FC = () => {
               ) : (
                 <div className="space-y-2">
                   {result.suggestions?.map((sug, i) => (
-                    <div key={i} className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <div key={i} className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#005FAF] shrink-0 mt-0.5" />
                       <span>{sug}</span>
                     </div>
                   ))}

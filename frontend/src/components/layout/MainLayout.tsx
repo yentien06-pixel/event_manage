@@ -22,7 +22,7 @@ export const MainLayout: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#F6F8FB] flex items-center justify-center p-6 text-xs text-slate-500 font-medium">
         <div className="flex items-center gap-2">
-          <RefreshCw className="w-4 h-4 text-[#005597] animate-spin" />
+          <RefreshCw className="w-4 h-4 text-[#005FAF] animate-spin" />
           <span>Đang xác thực thông tin tài khoản...</span>
         </div>
       </div>
@@ -56,7 +56,7 @@ export const MainLayout: React.FC = () => {
           )}
 
           {saving && (
-            <div role="status" className="mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-xs text-[#005597] font-semibold flex items-center gap-2">
+            <div role="status" className="mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-xs text-[#005FAF] font-semibold flex items-center gap-2">
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
               <span>Đang lưu và đồng bộ dữ liệu lên máy chủ...</span>
             </div>
@@ -65,7 +65,7 @@ export const MainLayout: React.FC = () => {
           {loading ? (
             <div className="p-12 text-center text-xs text-slate-500 font-medium">
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-xs">
-                <RefreshCw className="w-4 h-4 text-[#005597] animate-spin" />
+                <RefreshCw className="w-4 h-4 text-[#005FAF] animate-spin" />
                 <span>Đang tải dữ liệu hồ sơ sự kiện...</span>
               </div>
             </div>

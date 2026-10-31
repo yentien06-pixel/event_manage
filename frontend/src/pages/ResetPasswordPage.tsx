@@ -82,7 +82,7 @@ export const ResetPasswordPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-[#005597] shadow-sm mb-3">
+          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-[#005FAF] shadow-sm mb-3">
             <Lock className="w-6 h-6" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -111,7 +111,7 @@ export const ResetPasswordPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="w-full inline-flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#005597] hover:bg-[#004377] transition-colors cursor-pointer"
+                  className="w-full inline-flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#005FAF] hover:bg-[#004A8A] transition-colors cursor-pointer"
                 >
                   Đăng nhập ngay
                 </button>
@@ -121,7 +121,7 @@ export const ResetPasswordPage: React.FC = () => {
             <>
               {verifying ? (
                 <div className="py-8 text-center text-sm text-slate-500">
-                  <div className="w-6 h-6 border-2 border-[#005597] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-6 h-6 border-2 border-[#005FAF] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   Đang xác thực liên kết khôi phục...
                 </div>
               ) : (
@@ -135,7 +135,7 @@ export const ResetPasswordPage: React.FC = () => {
 
                   {tokenEmail && (
                     <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 shrink-0 text-[#005597]" />
+                      <ShieldCheck className="w-4 h-4 shrink-0 text-[#005FAF]" />
                       <span>Đang đặt lại mật khẩu cho tài khoản: <strong>{tokenEmail}</strong></span>
                     </div>
                   )}
@@ -150,11 +150,11 @@ export const ResetPasswordPage: React.FC = () => {
                         value={token}
                         onChange={(e) => setToken(e.target.value)}
                         placeholder="Nhập mã xác thực từ email hoặc quản trị viên"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:border-[#005597] focus:bg-white transition-all font-mono"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005FAF]/20 focus:border-[#005FAF] focus:bg-white transition-all font-mono"
                         required
                       />
                       <p className="text-[11px] text-slate-500 mt-1.5">
-                        Chưa có mã? <Link to="/forgot-password" className="text-[#005597] font-semibold hover:underline">Nhận mã xác minh OTP qua email tại đây</Link>
+                        Chưa có mã? <Link to="/forgot-password" className="text-[#005FAF] font-semibold hover:underline">Nhận mã xác minh OTP qua email tại đây</Link>
                       </p>
                     </div>
                   )}
@@ -169,7 +169,7 @@ export const ResetPasswordPage: React.FC = () => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Tối thiểu 6 ký tự"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:border-[#005597] focus:bg-white transition-all pr-10"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005FAF]/20 focus:border-[#005FAF] focus:bg-white transition-all pr-10"
                         required
                       />
                       <button
@@ -193,7 +193,7 @@ export const ResetPasswordPage: React.FC = () => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Nhập lại mật khẩu mới"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:border-[#005597] focus:bg-white transition-all pr-10"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005FAF]/20 focus:border-[#005FAF] focus:bg-white transition-all pr-10"
                         required
                       />
                       <button
@@ -210,7 +210,7 @@ export const ResetPasswordPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading || (tokenValid === false && !!tokenFromUrl)}
-                    className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#005597] hover:bg-[#004377] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005597] disabled:opacity-50 transition-colors cursor-pointer"
+                    className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#005FAF] hover:bg-[#004A8A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005FAF] disabled:opacity-50 transition-colors cursor-pointer"
                   >
                     {loading ? (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -222,7 +222,7 @@ export const ResetPasswordPage: React.FC = () => {
                   <div className="text-center pt-2">
                     <Link
                       to="/login"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#005597] hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#005FAF] hover:underline"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
                       Quay lại trang Đăng nhập
