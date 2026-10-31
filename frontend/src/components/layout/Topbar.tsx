@@ -3,7 +3,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Bell,
   Search,
-  RotateCcw,
   ChevronDown,
   CheckCheck,
   ChevronRight,
@@ -23,7 +22,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, switchUser, allUsers, logout } = useAuth();
-  const { notifications, markNotificationAsRead, markAllNotificationsAsRead, resetAllData, events } = useEvents();
+  const { notifications, markNotificationAsRead, markAllNotificationsAsRead, events } = useEvents();
 
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -79,7 +78,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
     : [];
 
   return (
-    <header className="h-14 sm:h-15 bg-white border-b border-slate-200/80 px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
+    <header className="h-14 sm:h-15 bg-white border-b border-slate-200 shrink-0 px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
       {/* Left: Mobile Menu Button và Breadcrumbs */}
       <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 mr-2 flex-1 sm:flex-none">
         <button
@@ -147,20 +146,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
 
       {/* Right: Actions và User Menu */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-        {/* Reset Demo Data Button */}
-        <button
-          onClick={() => {
-            if (confirm('Khôi phục toàn bộ dữ liệu mẫu (sự kiện, CSVC, thông báo)?')) {
-              resetAllData();
-            }
-          }}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-[#075F9F] bg-slate-100 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
-          title="Khôi phục dữ liệu ban đầu để demo"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Reset Demo</span>
-        </button>
-
         {/* Notifications Bell */}
         <div className="relative">
           <button

@@ -44,6 +44,13 @@ export const UserManagementPage: React.FC = () => {
   const [drawerLoading, setDrawerLoading] = useState(false);
   const [drawerError, setDrawerError] = useState('');
 
+  // Lock/Unlock Confirmation Modal State
+  const [lockModalUser, setLockModalUser] = useState<User | null>(null);
+  const [lockModalAction, setLockModalAction] = useState<'LOCK' | 'UNLOCK' | null>(null);
+  const [lockReason, setLockReason] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
+
   // Create Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
@@ -60,7 +67,7 @@ export const UserManagementPage: React.FC = () => {
     newPassword: '',
   });
 
-  // Tải danh sách người dùng
+  // Tải danh sách người dùng từ API
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -110,7 +117,7 @@ export const UserManagementPage: React.FC = () => {
       const matchStatus =
         selectedStatus === 'ALL' ||
         (selectedStatus === 'ACTIVE' && u.isActive !== false) ||
-        (selectedStatus === 'INACTIVE' && u.isActive === false);
+        (selectedStatus === 'LOCKED' && u.isActive === false);
 
       return matchQuery && matchRole && matchStatus;
     });
@@ -142,6 +149,57 @@ export const UserManagementPage: React.FC = () => {
   const handleCloseDrawer = () => {
     setSelectedUser(null);
     setDrawerError('');
+  };
+
+  // Mở Modal Xác nhận Khóa / Mở khóa
+  const handleOpenLockModal = (user: User) => {
+    if (user.isActive !== false && (user.id === currentUser.id || user.email === currentUser.email)) {
+      alert('Bạn không thể tự khóa tài khoản Quản trị viên đang đăng nhập của chính mình.');
+      return;
+    }
+    setLockModalUser(user);
+    setLockModalAction(user.isActive !== false ? 'LOCK' : 'UNLOCK');
+    setLockReason('');
+    setActionError('');
+  };
+
+  // Thực hiện Khóa hoặc Mở khóa tài khoản
+  const handleConfirmLockAction = async () => {
+    if (!lockModalUser || !lockModalAction) return;
+    setActionLoading(true);
+    setActionError('');
+
+    try {
+      if (lockModalAction === 'LOCK') {
+        const res = await api.lockUser(lockModalUser.id, lockReason);
+        setSuccessMessage(res.message || `Đã khóa tài khoản ${lockModalUser.fullName} thành công.`);
+      } else {
+        const res = await api.unlockUser(lockModalUser.id);
+        setSuccessMessage(res.message || `Đã mở khóa tài khoản ${lockModalUser.fullName} thành công.`);
+      }
+      setTimeout(() => setSuccessMessage(''), 4000);
+
+      const nextActive = lockModalAction === 'UNLOCK';
+      // Cập nhật selectedUser nếu đang hiển thị trong Drawer
+      if (selectedUser?.id === lockModalUser.id) {
+        setSelectedUser({ ...selectedUser, isActive: nextActive });
+      }
+      // Cập nhật danh sách người dùng local ngay lập tức
+      setUsers((prev) =>
+        prev.map((u) => (u.id === lockModalUser.id ? { ...u, isActive: nextActive } : u))
+      );
+
+      // Đóng modal xác nhận
+      setLockModalUser(null);
+      setLockModalAction(null);
+
+      // Đồng bộ lại từ database
+      fetchUsers();
+    } catch (err: any) {
+      setActionError(err.message || 'Thao tác thất bại. Vui lòng thử lại.');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   // Mở Modal Tạo mới
@@ -184,7 +242,6 @@ export const UserManagementPage: React.FC = () => {
       setSuccessMessage(`Đã cập nhật thông tin tài khoản ${formData.fullName} thành công!`);
       setTimeout(() => setSuccessMessage(''), 4000);
 
-      // Cập nhật state
       setSelectedUser(updated);
       setDrawerMode('VIEW');
       fetchUsers();
@@ -219,29 +276,6 @@ export const UserManagementPage: React.FC = () => {
       setCreateError(err.message || 'Không thể tạo người dùng. Vui lòng thử lại.');
     } finally {
       setCreateLoading(false);
-    }
-  };
-
-  // Khóa / Mở khóa nhanh
-  const handleToggleActiveQuick = async (user: User) => {
-    const nextActive = user.isActive === false;
-    const confirmMsg = nextActive
-      ? `Bạn có chắc muốn mở khóa cho tài khoản ${user.fullName}?`
-      : `Bạn có chắc muốn tạm khóa tài khoản ${user.fullName}? Người dùng sẽ không thể đăng nhập.`;
-
-    if (!window.confirm(confirmMsg)) return;
-
-    try {
-      await api.updateUser(user.id, { isActive: nextActive });
-      setSuccessMessage(`Đã ${nextActive ? 'mở khóa' : 'tạm khóa'} tài khoản ${user.fullName}`);
-      setTimeout(() => setSuccessMessage(''), 3000);
-
-      if (selectedUser?.id === user.id) {
-        setSelectedUser({ ...selectedUser, isActive: nextActive });
-      }
-      fetchUsers();
-    } catch (err: any) {
-      alert(err.message || 'Thao tác thất bại.');
     }
   };
 
@@ -338,7 +372,7 @@ export const UserManagementPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Lọc theo Trạng thái */}
+        {/* Lọc theo Trạng thái (ACTIVE / LOCKED) */}
         <div>
           <select
             value={selectedStatus}
@@ -347,7 +381,7 @@ export const UserManagementPage: React.FC = () => {
           >
             <option value="ALL">Tất cả trạng thái</option>
             <option value="ACTIVE">Đang hoạt động</option>
-            <option value="INACTIVE">Tạm khóa / Dừng</option>
+            <option value="LOCKED">Đã khóa</option>
           </select>
         </div>
       </div>
@@ -409,7 +443,7 @@ export const UserManagementPage: React.FC = () => {
                     </td>
 
                     {/* 2. Email */}
-                    <td className="py-3.5 px-4 text-slate-600 font-mono text-[11px] truncate">
+                    <td className="py-3.5 px-4 text-slate-600 text-xs sm:text-[13px] truncate font-normal">
                       {u.email}
                     </td>
 
@@ -424,7 +458,7 @@ export const UserManagementPage: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* 4. Trạng thái */}
+                    {/* 4. Trạng thái (Đang hoạt động: Xanh | Đã khóa: Đỏ) */}
                     <td className="py-3.5 px-4 text-center">
                       {isActive ? (
                         <span className="inline-block whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -432,7 +466,7 @@ export const UserManagementPage: React.FC = () => {
                         </span>
                       ) : (
                         <span className="inline-block whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          Bị khóa
+                          Đã khóa
                         </span>
                       )}
                     </td>
@@ -456,7 +490,7 @@ export const UserManagementPage: React.FC = () => {
         </table>
       </div>
 
-      {/* ── MOBILE VIEW (< 768px): Danh sách card dọc (Chỉ 5 thông tin chính) ── */}
+      {/* ── MOBILE VIEW (< 768px): Danh sách card dọc ── */}
       <div className="md:hidden space-y-3">
         {filteredUsers.length === 0 ? (
           <div className="p-8 text-center bg-white rounded-xl border border-slate-200 text-slate-400">
@@ -492,11 +526,11 @@ export const UserManagementPage: React.FC = () => {
 
                   {isActive ? (
                     <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Hoạt động
+                      Đang hoạt động
                     </span>
                   ) : (
                     <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                      Bị khóa
+                      Đã khóa
                     </span>
                   )}
                 </div>
@@ -505,7 +539,7 @@ export const UserManagementPage: React.FC = () => {
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
                   <div className="flex items-center gap-1.5 truncate min-w-0 pr-2">
                     <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="font-mono text-[11px] truncate">{u.email}</span>
+                    <span className="text-xs text-slate-600 truncate font-normal">{u.email}</span>
                   </div>
 
                   <button
@@ -540,15 +574,15 @@ export const UserManagementPage: React.FC = () => {
               
               {/* 1. Header cố định của Drawer */}
               <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#005597] flex items-center justify-center shrink-0">
                     {drawerMode === 'VIEW' ? <Eye className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
                   </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 truncate">
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-slate-900 truncate tracking-tight">
                       {drawerMode === 'VIEW' ? 'Thông tin chi tiết tài khoản' : 'Chỉnh sửa tài khoản'}
                     </h3>
-                    <p className="text-[11px] text-slate-500 font-mono truncate">{selectedUser.email}</p>
+                    <p className="text-xs sm:text-[13px] text-slate-500 truncate mt-0.5 font-normal">{selectedUser.email}</p>
                   </div>
                 </div>
 
@@ -576,26 +610,29 @@ export const UserManagementPage: React.FC = () => {
                   <div className="space-y-4">
                     {/* Card tóm tắt người dùng */}
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-3.5">
-                      <div className="w-12 h-12 rounded-full bg-[#005597] text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-[#005597] text-white flex items-center justify-center font-semibold text-lg shadow-sm shrink-0">
                         {selectedUser.fullName?.charAt(0) || 'U'}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-base font-bold text-slate-900 truncate">{selectedUser.fullName}</h4>
+                        <h4 className="text-base sm:text-lg font-semibold text-slate-900 truncate tracking-tight">
+                          {selectedUser.fullName}
+                        </h4>
                         <div className="mt-1 flex items-center gap-2 flex-wrap">
                           <span
-                            className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getRoleBadgeStyle(
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeStyle(
                               selectedUser.role
                             )}`}
                           >
                             {roleNames[selectedUser.role] || selectedUser.role}
                           </span>
+                          {/* Badge trạng thái chuẩn quy định */}
                           {selectedUser.isActive !== false ? (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                               Đang hoạt động
                             </span>
                           ) : (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                              Tài khoản bị khóa
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                              Đã khóa
                             </span>
                           )}
                         </div>
@@ -604,45 +641,51 @@ export const UserManagementPage: React.FC = () => {
 
                     {/* Danh sách thông tin chi tiết */}
                     <div className="space-y-3 pt-2">
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-2xs">
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
                         <Mail className="w-4 h-4 text-[#005597] shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Email đăng nhập</div>
-                          <div className="text-xs sm:text-sm font-mono text-slate-800 break-all">{selectedUser.email}</div>
+                          <div className="text-xs sm:text-[13px] font-medium text-slate-500 mb-0.5">Email đăng nhập</div>
+                          <div className="text-sm sm:text-[15px] font-normal text-slate-800 break-all leading-normal">
+                            {selectedUser.email}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-2xs">
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
                         <Building className="w-4 h-4 text-[#005597] shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Đơn vị / Khoa công tác</div>
-                          <div className="text-xs sm:text-sm font-medium text-slate-800">{selectedUser.department || 'Chưa cập nhật'}</div>
+                          <div className="text-xs sm:text-[13px] font-medium text-slate-500 mb-0.5">Đơn vị / Khoa công tác</div>
+                          <div className="text-sm sm:text-[15px] font-normal text-slate-800 leading-normal">
+                            {selectedUser.department || 'Chưa cập nhật'}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-2xs">
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
                         <Phone className="w-4 h-4 text-[#005597] shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Số điện thoại liên hệ</div>
-                          <div className="text-xs sm:text-sm font-mono text-slate-800">{selectedUser.phone || 'Chưa cập nhật'}</div>
+                          <div className="text-xs sm:text-[13px] font-medium text-slate-500 mb-0.5">Số điện thoại liên hệ</div>
+                          <div className="text-sm sm:text-[15px] font-normal text-slate-800 leading-normal">
+                            {selectedUser.phone || 'Chưa cập nhật'}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-2xs">
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
                         <Calendar className="w-4 h-4 text-[#005597] shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ngày tạo tài khoản</div>
-                          <div className="text-xs sm:text-sm text-slate-700">
+                          <div className="text-xs sm:text-[13px] font-medium text-slate-500 mb-0.5">Ngày tạo tài khoản</div>
+                          <div className="text-sm sm:text-[15px] font-normal text-slate-800 leading-normal">
                             {selectedUser.createdAt ? formatDateTime(selectedUser.createdAt) : 'Hệ thống khởi tạo'}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white border border-slate-100 shadow-2xs">
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
                         <Shield className="w-4 h-4 text-[#005597] shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Phân quyền nghiệp vụ</div>
-                          <div className="text-xs text-slate-700 mt-1 leading-relaxed">
+                          <div className="text-xs sm:text-[13px] font-medium text-slate-500 mb-0.5">Phân quyền nghiệp vụ</div>
+                          <div className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-0.5 font-normal">
                             {selectedUser.role === 'ADMIN' && 'Toàn quyền cấu hình hệ thống, quản lý người dùng và giám sát BPMN.'}
                             {selectedUser.role === 'BTC' && 'Nộp hồ sơ sự kiện, mượn cơ sở vật chất và nộp quyết toán kinh phí.'}
                             {selectedUser.role === 'BCN_KHOA' && 'Thẩm định hồ sơ sự kiện của sinh viên và các CLB thuộc Khoa.'}
@@ -661,7 +704,7 @@ export const UserManagementPage: React.FC = () => {
                   <form id="drawer-edit-form" onSubmit={handleSaveEdit} className="space-y-4">
                     {/* Họ và tên */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
                         Họ và tên <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -675,20 +718,20 @@ export const UserManagementPage: React.FC = () => {
 
                     {/* Email (Readonly) */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
                         Email tài khoản (Cố định)
                       </label>
                       <input
                         type="email"
                         value={formData.email}
                         disabled
-                        className="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-500 font-mono cursor-not-allowed"
+                        className="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-600 cursor-not-allowed"
                       />
                     </div>
 
                     {/* Vai trò nghiệp vụ */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
                         Vai trò nghiệp vụ <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -707,7 +750,7 @@ export const UserManagementPage: React.FC = () => {
 
                     {/* Đơn vị / Khoa */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
                         Đơn vị / Khoa công tác
                       </label>
                       <input
@@ -721,7 +764,7 @@ export const UserManagementPage: React.FC = () => {
 
                     {/* Số điện thoại */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
                         Số điện thoại
                       </label>
                       <input
@@ -729,7 +772,7 @@ export const UserManagementPage: React.FC = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="Ví dụ: 0905123456"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white font-mono"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white"
                       />
                     </div>
 
@@ -747,13 +790,13 @@ export const UserManagementPage: React.FC = () => {
                         </span>
                       </label>
                       <p className="text-[11px] text-slate-500 mt-1 pl-6">
-                        Bỏ chọn để tạm khóa tài khoản này khi có vi phạm hoặc cần đình chỉ truy cập.
+                        Bỏ chọn để khóa tài khoản này khi có vi phạm hoặc cần đình chỉ truy cập. Dữ liệu tài khoản vẫn được giữ nguyên.
                       </p>
                     </div>
 
                     {/* Đặt lại mật khẩu mới */}
                     <div className="pt-2 border-t border-slate-100">
-                      <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1 flex items-center gap-1.5">
                         <KeyRound className="w-3.5 h-3.5 text-slate-500" />
                         <span>Đặt lại mật khẩu mới (để trống nếu giữ nguyên)</span>
                       </label>
@@ -773,31 +816,42 @@ export const UserManagementPage: React.FC = () => {
               <div className="px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-between gap-3 shrink-0">
                 {drawerMode === 'VIEW' ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleActiveQuick(selectedUser)}
-                      className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
-                        selectedUser.isActive !== false
-                          ? 'text-rose-700 bg-rose-50 hover:bg-rose-100'
-                          : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                      }`}
-                    >
-                      {selectedUser.isActive !== false ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-                      <span>{selectedUser.isActive !== false ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}</span>
-                    </button>
+                    {/* Nút Khóa / Mở khóa tài khoản tại footer Drawer */}
+                    {selectedUser.id === currentUser.id ? (
+                      <div
+                        className="px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-400 bg-slate-100 border border-slate-200 cursor-not-allowed"
+                        title="Bạn không thể tự khóa tài khoản của chính mình"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>Tài khoản của bạn</span>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenLockModal(selectedUser)}
+                        className={`px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 cursor-pointer transition-colors border shadow-2xs ${
+                          selectedUser.isActive !== false
+                            ? 'text-rose-700 bg-rose-50 hover:bg-rose-100 border-rose-200'
+                            : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
+                        }`}
+                      >
+                        {selectedUser.isActive !== false ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                        <span>{selectedUser.isActive !== false ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}</span>
+                      </button>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={handleCloseDrawer}
-                        className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
+                        className="px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
                       >
                         Đóng
                       </button>
                       <button
                         type="button"
                         onClick={handleSwitchToEdit}
-                        className="px-4 py-2 bg-[#005597] hover:bg-[#004377] text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+                        className="px-4 py-2 bg-[#005597] hover:bg-[#004377] text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                         <span>Chỉnh sửa</span>
@@ -810,7 +864,7 @@ export const UserManagementPage: React.FC = () => {
                       type="button"
                       onClick={() => setDrawerMode('VIEW')}
                       disabled={drawerLoading}
-                      className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
+                      className="px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
                     >
                       Hủy bỏ
                     </button>
@@ -818,7 +872,7 @@ export const UserManagementPage: React.FC = () => {
                       type="submit"
                       form="drawer-edit-form"
                       disabled={drawerLoading}
-                      className="px-4 py-2 bg-[#005597] hover:bg-[#004377] text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-xs flex items-center gap-1.5"
+                      className="px-4 py-2 bg-[#005597] hover:bg-[#004377] text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-xs flex items-center gap-1.5"
                     >
                       {drawerLoading ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -833,6 +887,141 @@ export const UserManagementPage: React.FC = () => {
                 )}
               </div>
 
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL XÁC NHẬN KHÓA / MỞ KHÓA TÀI KHOẢN (Đúng chuẩn yêu cầu) ── */}
+      {lockModalUser && lockModalAction && (
+        <div className="fixed inset-0 z-60 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-fadeIn">
+            {/* Header */}
+            <div
+              className={`px-5 py-4 border-b flex items-center justify-between ${
+                lockModalAction === 'LOCK' ? 'bg-rose-50/80 border-rose-100' : 'bg-emerald-50/80 border-emerald-100'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    lockModalAction === 'LOCK' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                  }`}
+                >
+                  {lockModalAction === 'LOCK' ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {lockModalAction === 'LOCK' ? 'Xác nhận khóa tài khoản' : 'Xác nhận mở khóa tài khoản'}
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-500 truncate mt-0.5 font-normal">{lockModalUser.email}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setLockModalUser(null);
+                  setLockModalAction(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 space-y-4">
+              {actionError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                  <span>{actionError}</span>
+                </div>
+              )}
+
+              {/* Thông tin đối tượng */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-[#005597] font-bold flex items-center justify-center shrink-0">
+                  {lockModalUser.fullName?.charAt(0) || 'U'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-slate-900 truncate">{lockModalUser.fullName}</div>
+                  <div className="text-[11px] text-slate-500 truncate">{lockModalUser.department || roleNames[lockModalUser.role]}</div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getRoleBadgeStyle(lockModalUser.role)}`}>
+                  {lockModalUser.role}
+                </span>
+              </div>
+
+              {/* Nội dung xác nhận theo đúng quy định */}
+              {lockModalAction === 'LOCK' ? (
+                <div className="space-y-3">
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                    Bạn có chắc chắn muốn khóa tài khoản này? Người dùng sẽ không thể đăng nhập hoặc tiếp tục sử dụng hệ thống cho đến khi được mở khóa. Dữ liệu tài khoản vẫn được giữ nguyên.
+                  </p>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Lý do khóa tài khoản (phục vụ quản trị và kiểm toán):
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={lockReason}
+                      onChange={(e) => setLockReason(e.target.value)}
+                      placeholder="Nhập lý do khóa tài khoản (ví dụ: Tạm đình chỉ theo yêu cầu phòng Tổ chức - Hành chính...)"
+                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:border-rose-500 focus:bg-white"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                    Bạn có muốn mở khóa tài khoản này? Người dùng sẽ có thể đăng nhập lại bằng thông tin xác thực hiện có.
+                  </p>
+                  <p className="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 leading-relaxed">
+                    Sau khi mở khóa, người dùng có thể đăng nhập bình thường bằng email và mật khẩu cũ mà không cần tạo lại tài khoản hay đổi mật khẩu.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer Buttons: [Hủy] [Xác nhận] */}
+            <div className="px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setLockModalUser(null);
+                  setLockModalAction(null);
+                }}
+                disabled={actionLoading}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors cursor-pointer"
+              >
+                Hủy
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmLockAction}
+                disabled={actionLoading}
+                className={`px-4 py-2 text-white rounded-xl text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer shadow-xs flex items-center gap-1.5 ${
+                  lockModalAction === 'LOCK'
+                    ? 'bg-rose-600 hover:bg-rose-700'
+                    : 'bg-[#005597] hover:bg-[#004377]'
+                }`}
+              >
+                {actionLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : lockModalAction === 'LOCK' ? (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Xác nhận khóa</span>
+                  </>
+                ) : (
+                  <>
+                    <Unlock className="w-3.5 h-3.5" />
+                    <span>Xác nhận mở khóa</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -887,7 +1076,7 @@ export const UserManagementPage: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="user@due.edu.vn"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white font-mono"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white"
                   required
                 />
               </div>
@@ -932,7 +1121,7 @@ export const UserManagementPage: React.FC = () => {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="0905123456"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white font-mono"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005597]/20 focus:bg-white"
                 />
               </div>
 

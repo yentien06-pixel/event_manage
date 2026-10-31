@@ -227,8 +227,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
   return (
     <>
-      {/* ── Desktop Sticky Sidebar (Visible on >= 1024px) ── */}
-      <aside className="hidden lg:flex w-60 xl:w-64 bg-[#062c51] text-slate-200 flex-col shrink-0 h-screen sticky top-0 border-r border-[#04203b] z-30 select-none">
+      {/* ── Desktop Fixed Sidebar (Visible on >= 1024px) ── */}
+      <aside className="hidden lg:flex w-60 xl:w-64 bg-[#062c51] text-slate-200 flex-col shrink-0 h-screen border-r border-[#04203b] z-30 select-none overflow-hidden">
         {renderContent(false)}
       </aside>
 

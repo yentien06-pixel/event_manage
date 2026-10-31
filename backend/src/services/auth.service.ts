@@ -22,7 +22,7 @@ export async function login(email: string, password: string) {
   }
 
   if (!user.isActive) {
-    throw new Error('Tài khoản đã bị tạm khóa hoặc vô hiệu hóa bởi quản trị viên');
+    throw new Error('Tài khoản của bạn đã bị khóa bởi Quản trị viên. Vui lòng liên hệ Admin để được hỗ trợ.');
   }
 
   // 1. Kiểm tra tài khoản có đang trong thời gian bị hạn chế đăng nhập hay không
@@ -314,6 +314,10 @@ export async function resetPassword(token: string, newPassword: string) {
   const user = await prisma.user.findUnique({ where: { email: resetRecord.email } });
   if (!user) {
     throw new Error('Không tìm thấy tài khoản người dùng tương ứng.');
+  }
+
+  if (!user.isActive) {
+    throw new Error('Tài khoản này đã bị khóa bởi Quản trị viên. Vui lòng liên hệ Admin để được hỗ trợ.');
   }
 
   // Hash mật khẩu mới bằng bcrypt

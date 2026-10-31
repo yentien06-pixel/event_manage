@@ -239,4 +239,13 @@ export const api = {
   getUsers: () => request<{ success: boolean; data: any[] }>('/users'),
   createUser: (userData: any) => request<{ success: boolean; data: any }>('/users', { method: 'POST', body: JSON.stringify(userData) }),
   updateUser: (id: string, userData: any) => request<{ success: boolean; data: any }>('/users/' + id, { method: 'PUT', body: JSON.stringify(userData) }),
+  lockUser: (id: string, reason?: string) =>
+    request<{ success: boolean; message: string; data: any }>(`/users/${id}/lock`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    }),
+  unlockUser: (id: string) =>
+    request<{ success: boolean; message: string; data: any }>(`/users/${id}/unlock`, {
+      method: 'POST',
+    }),
 };

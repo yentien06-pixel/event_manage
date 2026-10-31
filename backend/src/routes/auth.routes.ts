@@ -12,6 +12,7 @@ import {
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { getPermissionsForRole, ROLE_PERMISSIONS } from '../config/permissions';
+import prisma from '../config/database';
 
 const router = Router();
 
@@ -70,9 +71,10 @@ router.post('/login', validate(loginSchema), async (req: Request, res: Response)
     const result = await login(email, password);
     res.json({ success: true, data: result });
   } catch (err: any) {
-    const isLocked = err.message.includes('khóa');
-    const statusCode = isLocked ? 429 : 401;
-    res.status(statusCode).json({ success: false, error: err.message, isLocked });
+    const isPermanentLock = err.message.includes('Quản trị viên') || err.message.includes('quản trị viên');
+    const isLocked = err.message.includes('khóa') || err.message.includes('khoá');
+    const statusCode = isPermanentLock ? 403 : (isLocked ? 429 : 401);
+    res.status(statusCode).json({ success: false, error: err.message, isLocked, isPermanentLock });
   }
 });
 
@@ -178,6 +180,18 @@ router.post('/google', async (req: Request, res: Response) => {
     const payload = (await response.json()) as any;
     if (payload.aud !== googleClientId) {
       res.status(401).json({ success: false, error: 'Khóa Client ID Google không trùng khớp' });
+      return;
+    }
+
+    // Kiểm tra trạng thái tài khoản: Chặn tài khoản bị khóa đăng nhập bằng Google
+    const normalizedEmail = (payload.email || '').trim().toLowerCase();
+    const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+    if (existingUser && !existingUser.isActive) {
+      res.status(403).json({
+        success: false,
+        error: 'Tài khoản của bạn đã bị khóa bởi Quản trị viên. Đăng nhập Google bị từ chối.',
+        isLocked: true,
+      });
       return;
     }
 
