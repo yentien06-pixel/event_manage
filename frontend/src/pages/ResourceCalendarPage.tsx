@@ -46,7 +46,7 @@ export const ResourceCalendarPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Lịch Cơ sở vật chất & Hội trường</h1>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Lịch Cơ sở vật chất và Hội trường</h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Theo dõi trực quan lịch đặt phòng, sảnh, sân thể thao và phát hiện xung đột thời gian thực
           </p>
@@ -61,7 +61,7 @@ export const ResourceCalendarPage: React.FC = () => {
             aria-label="Lọc theo hội trường hoặc phòng"
             className="bg-white border border-slate-200 text-xs rounded-xl px-3 py-2 font-medium focus:outline-hidden focus:border-blue-500 cursor-pointer shadow-2xs"
           >
-            <option value="ALL">Tất cả hội trường & phòng</option>
+            <option value="ALL">Tất cả hội trường và phòng</option>
             {facilities.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name} ({f.capacity} chỗ)
@@ -172,7 +172,7 @@ export const ResourceCalendarPage: React.FC = () => {
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] text-blue-600 font-bold text-right flex items-center justify-end gap-1">
-                    Xem chi tiết hồ sơ & đổi lịch →
+                    Xem chi tiết hồ sơ và đổi lịch →
                   </div>
                 </div>
               );

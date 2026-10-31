@@ -81,7 +81,7 @@ export const EventCreatePage: React.FC = () => {
   ]);
 
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([
-    { id: '1', category: 'In ấn', itemName: 'Backdrop sân khấu & Standee', quantity: 1, unitPrice: 2000000, totalPrice: 2000000 },
+    { id: '1', category: 'In ấn', itemName: 'Backdrop sân khấu và Standee', quantity: 1, unitPrice: 2000000, totalPrice: 2000000 },
     { id: '2', category: 'Nước uống', itemName: 'Nước suối và trà bánh đại biểu', quantity: 1, unitPrice: 1200000, totalPrice: 1200000 },
   ]);
 
@@ -358,7 +358,7 @@ export const EventCreatePage: React.FC = () => {
             { id: 2, label: 'Kịch bản', icon: Clock },
             { id: 3, label: 'Dự trù kinh phí', icon: DollarSign },
             { id: 4, label: 'Cơ sở vật chất', icon: Building },
-            { id: 5, label: 'Xác nhận & Nộp', icon: Check },
+            { id: 5, label: 'Xác nhận và Nộp', icon: Check },
           ].map((s) => {
             const Icon = s.icon;
             const isCurrent = step === s.id;
@@ -718,10 +718,10 @@ export const EventCreatePage: React.FC = () => {
           </div>
         )}
 
-        {/* Step 4: Facility & Equipment Booking */}
+        {/* Step 4: Facility và Equipment Booking */}
         {step === 4 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-slate-800 border-b pb-2">Bước 4: Mượn Địa điểm & Thiết bị</h2>
+            <h2 className="text-sm font-bold text-slate-800 border-b pb-2">Bước 4: Mượn Địa điểm và Thiết bị</h2>
 
             {errors.facility && (
               <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
@@ -833,7 +833,7 @@ export const EventCreatePage: React.FC = () => {
           </div>
         )}
 
-        {/* Step 5: Summary & Submit */}
+        {/* Step 5: Summary và Submit */}
         {step === 5 && (
           <div className="space-y-4">
             <h2 className="text-sm font-bold text-slate-800 border-b pb-2">Bước 5: Kiểm tra lại và Nộp hồ sơ</h2>

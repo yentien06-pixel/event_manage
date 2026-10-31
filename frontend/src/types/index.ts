@@ -11,6 +11,7 @@ export interface User {
   avatar?: string;
   phone?: string;
   isActive?: boolean;
+  createdAt?: string;
 }
 
 export type EventStatus =

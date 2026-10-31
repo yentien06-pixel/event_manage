@@ -67,18 +67,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
     },
     {
       to: "/calendar",
-      label: "Lịch hội trường & CSVC",
+      label: "Lịch hội trường và CSVC",
       icon: CalendarRange,
     },
     {
       to: "/facilities",
-      label: "Danh mục phòng & Thiết bị",
+      label: "Danh mục phòng và Thiết bị",
       icon: Building2,
       roles: ["CSVC", "ADMIN"],
     },
     {
       to: "/handover",
-      label: "Bàn giao & Nghiệm thu",
+      label: "Bàn giao và Nghiệm thu",
       icon: ClipboardCheck,
       roles: ["CSVC", "BTC", "ADMIN"],
     },
@@ -96,15 +96,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
     },
     {
       to: "/analytics",
-      label: "Báo cáo & Đo lường KPI",
+      label: "Báo cáo và Đo lường KPI",
       icon: BarChart3,
       roles: ["BCN_KHOA", "DOAN_TRUONG", "CSVC", "KHTC", "ADMIN"],
     },
   ];
 
   const adminNavItems: NavItemDef[] = [
-    { to: "/admin/users", label: "Quản trị người dùng & RBAC", icon: Users, roles: ["ADMIN"] },
-    { to: "/admin/settings", label: "Cấu hình hệ thống & Tham số", icon: Settings, roles: ["ADMIN"] },
+    { to: "/admin/users", label: "Quản trị người dùng và RBAC", icon: Users, roles: ["ADMIN"] },
+    { to: "/admin/settings", label: "Cấu hình hệ thống và Tham số", icon: Settings, roles: ["ADMIN"] },
   ];
 
   // LỌC CHẶT CHẼ: Chỉ những mục menu phù hợp với vai trò hiện tại

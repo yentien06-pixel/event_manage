@@ -16,6 +16,8 @@ model User {
   role          String   // ADMIN, BTC, BCN_KHOA, DOAN_TRUONG, CSVC, KHTC
   department    String?
   isActive      Boolean  @default(true)
+  failedLoginAttempts Int      @default(0)
+  lockedUntil         DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -197,6 +199,8 @@ model Equipment {
   description   String?
   condition     String   @default("GOOD")
   isActive      Boolean  @default(true)
+  failedLoginAttempts Int      @default(0)
+  lockedUntil         DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -391,4 +395,16 @@ model SystemSetting {
   description String?
   category    String?
   updatedAt   DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  otpHash   String?
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

@@ -93,7 +93,7 @@ export const workflowStages = [
   { id: 6, name: 'Tổ chức sự kiện', statuses: ['READY_FOR_EVENT', 'FACILITY_HANDED_OVER', 'EVENT_IN_PROGRESS'] },
   { id: 7, name: 'Nghiệm thu CSVC', statuses: ['FACILITY_RETURN_PENDING', 'FACILITY_INSPECTION', 'FACILITY_INCIDENT', 'FACILITY_ACCEPTED'] },
   { id: 8, name: 'Quyết toán tài chính', statuses: ['REPORT_PENDING', 'FINANCE_DOCUMENTS_PENDING', 'FINANCE_REVIEW', 'FINANCE_REVISION_REQUESTED', 'FINANCE_APPROVAL_PENDING', 'PAYMENT_REJECTED', 'SETTLED'] },
-  { id: 9, name: 'Hoàn tất & Lưu trữ', statuses: ['COMPLETED', 'CANCELLED'] },
+  { id: 9, name: 'Hoàn tất và Lưu trữ', statuses: ['COMPLETED', 'CANCELLED'] },
 ];
 
 export function getCurrentStageIndex(status: EventStatus): number {

@@ -11,7 +11,7 @@ export const FacilityListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Danh mục Cơ sở vật chất & Thiết bị</h1>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Danh mục Cơ sở vật chất và Thiết bị</h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Quản lý hội trường, phòng học, trang thiết bị âm thanh ánh sáng dùng chung toàn trường
           </p>
@@ -25,7 +25,7 @@ export const FacilityListPage: React.FC = () => {
               activeTab === 'facilities' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Hội trường & Phòng ({facilities.length})
+            Hội trường và Phòng ({facilities.length})
           </button>
           <button
             onClick={() => setActiveTab('equipment')}

@@ -40,7 +40,7 @@ export const HandoverPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight">Bàn giao & Nghiệm thu Cơ sở vật chất</h1>
+        <h1 className="text-xl font-bold text-slate-900 tracking-tight">Bàn giao và Nghiệm thu Cơ sở vật chất</h1>
         <p className="text-xs text-slate-500 mt-0.5">
           Quy trình lập biên bản bàn giao phòng/thiết bị trước sự kiện và nghiệm thu hoàn trả sau sự kiện
         </p>

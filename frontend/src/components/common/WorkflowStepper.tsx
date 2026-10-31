@@ -18,7 +18,7 @@ export const WorkflowStepper: React.FC<WorkflowStepperProps> = ({ status }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div>
           <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500">
-            Tiến trình Tiếp nhận & Phê duyệt
+            Tiến trình Tiếp nhận và Phê duyệt
           </h3>
           <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
             Giai đoạn hiện tại: <span className="font-semibold text-slate-700">{workflowStages[currentStageIndex]?.name}</span>

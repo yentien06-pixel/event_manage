@@ -82,7 +82,7 @@ export const AnalyticsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Báo cáo & Thống kê Hiệu quả Quy trình</h1>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Báo cáo và Thống kê Hiệu quả Quy trình</h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Đo lường thời gian xử lý, tỷ lệ phê duyệt, xung đột tài nguyên và chênh lệch ngân sách
           </p>

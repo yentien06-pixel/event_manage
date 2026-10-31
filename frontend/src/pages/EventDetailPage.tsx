@@ -136,7 +136,7 @@ export const EventDetailPage: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-5 max-w-7xl mx-auto">
-      {/* Top Navigation & Breadcrumbs */}
+      {/* Top Navigation và Breadcrumbs */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate('/events')}
@@ -249,7 +249,7 @@ export const EventDetailPage: React.FC = () => {
             { id: 'facilities', label: '4. Đăng ký CSVC', icon: Building },
             { id: 'attachments', label: '5. Hồ sơ đính kèm', icon: Paperclip },
             { id: 'history', label: '6. Lịch sử duyệt', icon: History },
-            { id: 'handover', label: '7. Bàn giao & Nghiệm thu', icon: CheckCircle2 },
+            { id: 'handover', label: '7. Bàn giao và Nghiệm thu', icon: CheckCircle2 },
             { id: 'settlement', label: '8. Quyết toán KHTC', icon: Receipt },
             { id: 'report', label: '9. Báo cáo tổng kết', icon: FileCheck },
           ].map((tab) => {
@@ -413,10 +413,10 @@ export const EventDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 4: Facilities & Equipment */}
+        {/* Tab 4: Facilities và Equipment */}
         {activeTab === 'facilities' && (
           <div className="p-4 sm:p-5 space-y-3.5">
-            <h3 className="text-sm font-bold text-slate-800">Cơ sở vật chất & Thiết bị đã đăng ký</h3>
+            <h3 className="text-sm font-bold text-slate-800">Cơ sở vật chất và Thiết bị đã đăng ký</h3>
 
             {event.booking ? (
               <div className="space-y-4">
@@ -565,7 +565,7 @@ export const EventDetailPage: React.FC = () => {
         {/* Tab 6: Workflow History */}
         {activeTab === 'history' && (
           <div className="p-4 sm:p-5">
-            <h3 className="text-sm font-bold text-slate-800 mb-4">Lịch sử phê duyệt & Chuyển trạng thái</h3>
+            <h3 className="text-sm font-bold text-slate-800 mb-4">Lịch sử phê duyệt và Chuyển trạng thái</h3>
             <div className="space-y-4 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
               {(event.history || []).map((h) => (
                 <div key={h.id} className="relative pl-8 text-xs">
@@ -590,10 +590,10 @@ export const EventDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 7: Handover & Return */}
+        {/* Tab 7: Handover và Return */}
         {activeTab === 'handover' && (
           <div className="p-4 sm:p-5 space-y-3.5">
-            <h3 className="text-sm font-bold text-slate-800">Biên bản bàn giao & Nghiệm thu hoàn trả</h3>
+            <h3 className="text-sm font-bold text-slate-800">Biên bản bàn giao và Nghiệm thu hoàn trả</h3>
             {event.handover && event.handover.length > 0 ? (
               <div className="space-y-3">
                 {(event.handover || []).map((rec) => (
@@ -638,7 +638,7 @@ export const EventDetailPage: React.FC = () => {
                   </div>
                 </div>
 
-                <h4 className="font-bold text-slate-800 uppercase text-xs pt-2">Chứng từ & Hóa đơn kèm theo</h4>
+                <h4 className="font-bold text-slate-800 uppercase text-xs pt-2">Chứng từ và Hóa đơn kèm theo</h4>
                 <div className="space-y-2">
                   {(event.settlement?.documents || []).map((doc) => (
                     <div key={doc.id} className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between">

@@ -44,13 +44,13 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
     if (path.startsWith('/events'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Hồ sơ sự kiện' }];
     if (path.startsWith('/approvals'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Hàng đợi xét duyệt & Thẩm định' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Hàng đợi xét duyệt và Thẩm định' }];
     if (path.startsWith('/calendar'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Lịch hội trường & CSVC' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Lịch hội trường và CSVC' }];
     if (path.startsWith('/facilities'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Cơ sở vật chất & Thiết bị' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Cơ sở vật chất và Thiết bị' }];
     if (path.startsWith('/handover'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Bàn giao & Nghiệm thu' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Bàn giao và Nghiệm thu' }];
     if (path.startsWith('/settlements'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Quyết toán tài chính' }];
     if (path.startsWith('/reports'))
@@ -58,11 +58,11 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
     if (path.startsWith('/ai-review'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Trợ lý AI rà soát' }];
     if (path.startsWith('/analytics'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Báo cáo & Thống kê KPI' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Báo cáo và Thống kê KPI' }];
     if (path.startsWith('/notifications'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Trung tâm thông báo' }];
     if (path.startsWith('/admin/users'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Quản trị người dùng & RBAC' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Quản trị người dùng và RBAC' }];
     if (path.startsWith('/admin/settings'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Cấu hình tham số hệ thống' }];
     return [{ label: 'Trang chủ', path: '/' }, { label: 'Quản lý quy trình sự kiện' }];
@@ -80,7 +80,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
 
   return (
     <header className="h-14 sm:h-15 bg-white border-b border-slate-200/80 px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
-      {/* Left: Mobile Menu Button & Breadcrumbs */}
+      {/* Left: Mobile Menu Button và Breadcrumbs */}
       <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 mr-2 flex-1 sm:flex-none">
         <button
           type="button"
@@ -145,7 +145,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
         )}
       </div>
 
-      {/* Right: Actions & User Menu */}
+      {/* Right: Actions và User Menu */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Reset Demo Data Button */}
         <button

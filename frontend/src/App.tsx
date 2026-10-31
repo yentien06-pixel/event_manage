@@ -6,6 +6,9 @@ import { MainLayout } from './components/layout/MainLayout';
 import { UserRole } from './types';
 
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { EventListPage } from './pages/EventListPage';
 import { EventDetailPage } from './pages/EventDetailPage';
@@ -39,90 +42,93 @@ const RoleRoute: React.FC<{ children: React.ReactNode; allowedRoles: UserRole[] 
 export function App() {
   return (
     <ErrorBoundary>
-    <BrowserRouter>
-      <AuthProvider>
-        <EventProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="events" element={<EventListPage />} />
-              <Route
-                path="events/create"
-                element={
-                  <RoleRoute allowedRoles={['BTC', 'ADMIN']}>
-                    <EventCreatePage />
-                  </RoleRoute>
-                }
-              />
-              <Route path="events/:id" element={<EventDetailPage />} />
-              <Route path="events/:id/edit" element={<EventEditPage />} />
-              <Route
-                path="approvals"
-                element={
-                  <RoleRoute allowedRoles={['BCN_KHOA', 'DOAN_TRUONG', 'CSVC', 'KHTC', 'ADMIN']}>
-                    <ApprovalQueuePage />
-                  </RoleRoute>
-                }
-              />
-              <Route path="calendar" element={<ResourceCalendarPage />} />
-              <Route
-                path="facilities"
-                element={
-                  <RoleRoute allowedRoles={['CSVC', 'ADMIN']}>
-                    <FacilityListPage />
-                  </RoleRoute>
-                }
-              />
-              <Route
-                path="handover"
-                element={
-                  <RoleRoute allowedRoles={['CSVC', 'BTC', 'ADMIN']}>
-                    <HandoverPage />
-                  </RoleRoute>
-                }
-              />
-              <Route
-                path="settlements"
-                element={
-                  <RoleRoute allowedRoles={['KHTC', 'BTC', 'ADMIN']}>
-                    <SettlementPage />
-                  </RoleRoute>
-                }
-              />
-              <Route
-                path="reports"
-                element={
-                  <RoleRoute allowedRoles={['BTC', 'DOAN_TRUONG', 'ADMIN']}>
-                    <ReportPage />
-                  </RoleRoute>
-                }
-              />
-              <Route path="ai-review" element={<AIReviewPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="notifications" element={<NotificationPage />} />
-              <Route
-                path="admin/users"
-                element={
-                  <RoleRoute allowedRoles={['ADMIN']}>
-                    <UserManagementPage />
-                  </RoleRoute>
-                }
-              />
-              <Route
-                path="admin/settings"
-                element={
-                  <RoleRoute allowedRoles={['ADMIN']}>
-                    <SystemSettingsPage />
-                  </RoleRoute>
-                }
-              />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-          </Routes>
-        </EventProvider>
-      </AuthProvider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <EventProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<DashboardPage />} />
+                <Route path="events" element={<EventListPage />} />
+                <Route
+                  path="events/create"
+                  element={
+                    <RoleRoute allowedRoles={['BTC', 'ADMIN']}>
+                      <EventCreatePage />
+                    </RoleRoute>
+                  }
+                />
+                <Route path="events/:id" element={<EventDetailPage />} />
+                <Route path="events/:id/edit" element={<EventEditPage />} />
+                <Route
+                  path="approvals"
+                  element={
+                    <RoleRoute allowedRoles={['BCN_KHOA', 'DOAN_TRUONG', 'CSVC', 'KHTC', 'ADMIN']}>
+                      <ApprovalQueuePage />
+                    </RoleRoute>
+                  }
+                />
+                <Route path="calendar" element={<ResourceCalendarPage />} />
+                <Route
+                  path="facilities"
+                  element={
+                    <RoleRoute allowedRoles={['CSVC', 'ADMIN']}>
+                      <FacilityListPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route
+                  path="handover"
+                  element={
+                    <RoleRoute allowedRoles={['CSVC', 'BTC', 'ADMIN']}>
+                      <HandoverPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route
+                  path="settlements"
+                  element={
+                    <RoleRoute allowedRoles={['KHTC', 'BTC', 'ADMIN']}>
+                      <SettlementPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route
+                  path="reports"
+                  element={
+                    <RoleRoute allowedRoles={['BTC', 'DOAN_TRUONG', 'ADMIN']}>
+                      <ReportPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route path="ai-review" element={<AIReviewPage />} />
+                <Route path="analytics" element={<AnalyticsPage />} />
+                <Route path="notifications" element={<NotificationPage />} />
+                <Route
+                  path="admin/users"
+                  element={
+                    <RoleRoute allowedRoles={['ADMIN']}>
+                      <UserManagementPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route
+                  path="admin/settings"
+                  element={
+                    <RoleRoute allowedRoles={['ADMIN']}>
+                      <SystemSettingsPage />
+                    </RoleRoute>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Route>
+            </Routes>
+          </EventProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

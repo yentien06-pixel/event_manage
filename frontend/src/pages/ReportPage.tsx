@@ -126,7 +126,7 @@ export const ReportPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">2. Kết quả & Thành tựu đạt được:</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">2. Kết quả và Thành tựu đạt được:</label>
           <textarea
             rows={3}
             value={achievements}
@@ -137,7 +137,7 @@ export const ReportPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">3. Khó khăn & Tồn tại:</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">3. Khó khăn và Tồn tại:</label>
             <textarea
               rows={3}
               value={challenges}
@@ -158,7 +158,7 @@ export const ReportPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">5. Đề xuất & Kiến nghị với Nhà trường:</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">5. Đề xuất và Kiến nghị với Nhà trường:</label>
           <textarea
             rows={2}
             value={recommendations}

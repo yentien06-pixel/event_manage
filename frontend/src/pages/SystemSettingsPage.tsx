@@ -31,7 +31,7 @@ export const SystemSettingsPage: React.FC = () => {
       <form onSubmit={handleSave} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-5">
         <h2 className="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
           <Settings className="w-4 h-4 text-blue-600" />
-          <span>Tham số Quy trình & Cơ sở vật chất</span>
+          <span>Tham số Quy trình và Cơ sở vật chất</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

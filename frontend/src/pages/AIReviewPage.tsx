@@ -118,7 +118,7 @@ export const AIReviewPage: React.FC = () => {
             </span>
             <span className="text-xs text-blue-100 font-medium">Hệ thống thẩm định tự động theo Quy chế số 184/QĐ-ĐHKT</span>
           </div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Rà soát Hồ sơ & Cảnh báo Xung đột Quy chế</h1>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Rà soát Hồ sơ và Cảnh báo Xung đột Quy chế</h1>
           <p className="text-blue-100 text-xs md:text-sm mt-1 max-w-xl">
             Tự động kiểm tra tính đầy đủ, phát hiện trùng lịch cơ sở vật chất, thẩm định định mức tài chính và đề xuất cải thiện trước khi trình cấp duyệt.
           </p>
@@ -134,7 +134,7 @@ export const AIReviewPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Select Event & Info Banner */}
+      {/* Select Event và Info Banner */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -212,7 +212,7 @@ export const AIReviewPage: React.FC = () => {
       {/* Results */}
       {result && !isAnalyzing && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Score & Summary */}
+          {/* Score và Summary */}
           <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
             <div>
               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
@@ -280,14 +280,14 @@ export const AIReviewPage: React.FC = () => {
           {/* Detailed Findings */}
           <div className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-5">
             <h3 className="text-sm font-bold text-slate-900 border-b pb-2 flex items-center justify-between">
-              <span>Phân tích tính hợp lệ & Điểm rủi ro</span>
+              <span>Phân tích tính hợp lệ và Điểm rủi ro</span>
               <span className="text-xs font-normal text-slate-400">Đối chiếu Quy chế số 184/QĐ-ĐHKT</span>
             </h3>
 
-            {/* Inconsistencies & Conflict Risks */}
+            {/* Inconsistencies và Conflict Risks */}
             <div>
               <div className="text-xs font-bold text-rose-700 flex items-center gap-1.5 mb-2">
-                <ShieldAlert className="w-4 h-4" /> Các rủi ro & Mâu thuẫn phát hiện ({(result.risks?.length || 0) + (result.inconsistencies?.length || 0)})
+                <ShieldAlert className="w-4 h-4" /> Các rủi ro và Mâu thuẫn phát hiện ({(result.risks?.length || 0) + (result.inconsistencies?.length || 0)})
               </div>
               {(result.risks?.length || 0) + (result.inconsistencies?.length || 0) === 0 ? (
                 <div className="text-xs p-3 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-100 flex items-center gap-2">

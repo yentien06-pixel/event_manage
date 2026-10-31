@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ChevronDown, X, Clock } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, ChevronDown, X, Clock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -351,11 +351,19 @@ export const LoginPage: React.FC = () => {
                 )}
               </div>
 
-              {/* ── Password Field ── */}
+              {/* ── Password Field + Quên mật khẩu link ── */}
               <div>
-                <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
-                  Mật khẩu <span className="text-red-500">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700">
+                    Mật khẩu <span className="text-red-500">*</span>
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-[#005597] hover:text-[#003e6e] hover:underline"
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                </div>
                 <div className="relative">
                   <input
                     id="login-password"
@@ -404,11 +412,11 @@ export const LoginPage: React.FC = () => {
                 </label>
               </div>
 
-              {/* ── Lỗi chung ── */}
+              {/* ── Lỗi chung (Bao gồm cảnh báo khóa tài khoản & số lần thử) ── */}
               {generalError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg
-                  text-xs sm:text-sm font-medium text-center">
-                  {generalError}
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs sm:text-sm font-medium flex items-start gap-2 text-left">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500 mt-0.5" />
+                  <span>{generalError}</span>
                 </div>
               )}
 
@@ -417,12 +425,25 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full py-2.5 px-4 bg-[#075ea1] hover:bg-[#065089] text-white rounded-lg
+                  className="w-full py-2.5 px-4 bg-[#005597] hover:bg-[#004377] text-white rounded-lg
                     text-sm font-semibold transition-all shadow-sm flex items-center
                     justify-center min-h-[42px] cursor-pointer disabled:opacity-60"
                 >
                   {pending ? 'Đang đăng nhập...' : 'Đăng nhập hệ thống'}
                 </button>
+              </div>
+
+              {/* ── Đăng ký tài khoản mới link ── */}
+              <div className="pt-4 border-t border-slate-100 text-center">
+                <p className="text-xs sm:text-sm text-slate-600">
+                  Chưa có tài khoản?{' '}
+                  <Link
+                    to="/register"
+                    className="font-semibold text-[#005597] hover:text-[#004377] hover:underline inline-flex items-center gap-1"
+                  >
+                    Đăng ký tài khoản mới
+                  </Link>
+                </p>
               </div>
             </form>
 

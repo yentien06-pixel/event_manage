@@ -15,7 +15,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
 import { useEvents } from '../contexts/EventContext';
-import { roleNames, formatDateTime } from '../utils/helpers';
+import { formatDateTime } from '../utils/helpers';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -65,36 +65,32 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#062c51] via-[#075ea1] to-[#0a4d80] rounded-2xl p-4 sm:p-5 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-3">
+      {/* Tiêu đề trang gọn gàng & nút thao tác trực tiếp */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-200 border border-blue-400/30">
-              {roleNames[currentUser.role]}
-            </span>
-            <span className="text-[11px] text-blue-200/80 font-medium">Trường Đại học Kinh tế – Đại học Đà Nẵng</span>
-          </div>
-          <h1 className="text-lg sm:text-xl font-bold tracking-tight">
-            Xin chào, {currentUser.fullName}!
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Tổng quan hệ thống
           </h1>
-          <p className="text-blue-100/90 text-xs mt-1 max-w-xl font-normal leading-relaxed">
-            Hệ thống quản lý quy trình tiếp nhận, thẩm định đa cấp, mượn cơ sở vật chất và quyết toán sự kiện sinh viên.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Theo dõi tiến độ tiếp nhận, xét duyệt và cấp phép tổ chức sự kiện
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            onClick={() => navigate('/events/create')}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-100 text-[#075F9F] rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>Tạo sự kiện mới</span>
-          </button>
+        <div className="flex items-center gap-2">
+          {['BTC', 'ADMIN'].includes(currentUser.role) && (
+            <button
+              onClick={() => navigate('/events/create')}
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#005597] hover:bg-[#004377] text-white rounded-lg text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Tạo sự kiện mới</span>
+            </button>
+          )}
           <button
             onClick={() => navigate('/ai-review')}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-100 border border-indigo-400/30 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
             <span>Rà soát AI</span>
           </button>
         </div>
@@ -141,7 +137,7 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="text-[11px] font-medium text-slate-500">Đã hoàn tất toàn bộ</div>
             <div className="text-xl sm:text-2xl font-bold text-emerald-600 mt-0.5">{completed}</div>
-            <div className="text-[10px] text-emerald-700 mt-0.5 font-medium truncate">Nghiệm thu & quyết toán</div>
+            <div className="text-[10px] text-emerald-700 mt-0.5 font-medium truncate">Nghiệm thu và quyết toán</div>
           </div>
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -281,7 +277,7 @@ export const DashboardPage: React.FC = () => {
               >
                 <Building2 className="w-5 h-5 text-purple-600 mb-1.5" />
                 <div className="font-bold text-xs text-purple-900">Lịch hội trường</div>
-                <div className="text-[10px] text-purple-700 mt-0.5">Kiểm tra trùng phòng & CSVC</div>
+                <div className="text-[10px] text-purple-700 mt-0.5">Kiểm tra trùng phòng và CSVC</div>
               </div>
 
               <div
@@ -290,7 +286,7 @@ export const DashboardPage: React.FC = () => {
               >
                 <Receipt className="w-5 h-5 text-emerald-600 mb-1.5" />
                 <div className="font-bold text-xs text-emerald-900">Quyết toán tài chính</div>
-                <div className="text-[10px] text-emerald-700 mt-0.5">Hóa đơn & chứng từ KHTC</div>
+                <div className="text-[10px] text-emerald-700 mt-0.5">Hóa đơn và chứng từ KHTC</div>
               </div>
             </div>
           </div>
@@ -300,7 +296,7 @@ export const DashboardPage: React.FC = () => {
               <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
               <div>
                 <div className="text-xs font-bold">Trợ lý AI Đánh giá Hồ sơ</div>
-                <div className="text-[10px] text-slate-400">Tự động phát hiện thiếu sót & đề xuất phòng</div>
+                <div className="text-[10px] text-slate-400">Tự động phát hiện thiếu sót và đề xuất phòng</div>
               </div>
             </div>
             <button

@@ -60,6 +60,38 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
+  register: (data: { fullName: string; email: string; password: string; confirmPassword: string; phone?: string; department?: string }) =>
+    request<{ success: boolean; message: string; data: any }>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  forgotPassword: (email: string) =>
+    request<{ success: boolean; message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  verifyOtp: (email: string, otp: string) =>
+    request<{ success: boolean; resetSessionToken: string; email: string; message: string }>('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    }),
+  verifyResetToken: (token: string) =>
+    request<{ success: boolean; email: string }>('/auth/verify-reset-token?token=' + encodeURIComponent(token)),
+  resetPassword: (data: { token: string; newPassword: string; confirmPassword: string }) =>
+    request<{ success: boolean; message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  googleAuth: (credential: string) =>
+    request<{ success: boolean; data?: any; error?: string }>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
+    }),
+  sendOtp: (phone: string) =>
+    request<{ success: boolean; message?: string; error?: string }>('/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phone }),
+    }),
   getMe: () => request<{ success: boolean; data: any }>('/auth/me'),
 
   // Events
@@ -202,4 +234,9 @@ export const api = {
   },
   getAttachmentDownloadUrl: (eventId: string, attachmentId: string) =>
     `${BASE_URL}/events/${eventId}/attachments/${attachmentId}/download`,
+
+  // Users
+  getUsers: () => request<{ success: boolean; data: any[] }>('/users'),
+  createUser: (userData: any) => request<{ success: boolean; data: any }>('/users', { method: 'POST', body: JSON.stringify(userData) }),
+  updateUser: (id: string, userData: any) => request<{ success: boolean; data: any }>('/users/' + id, { method: 'PUT', body: JSON.stringify(userData) }),
 };

@@ -73,7 +73,7 @@ export const SettlementPage: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight">Quyết toán Tài chính & Chứng từ (KHTC)</h1>
+        <h1 className="text-xl font-bold text-slate-900 tracking-tight">Quyết toán Tài chính và Chứng từ (KHTC)</h1>
         <p className="text-xs text-slate-500 mt-0.5">
           Quy trình tiếp nhận, kiểm tra tính đầy đủ của bộ hóa đơn, đối chiếu dự toán và phê duyệt chi
         </p>

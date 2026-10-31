@@ -17,7 +17,7 @@ export const ApprovalQueuePage: React.FC = () => {
   const { events, transitionEvent, saving } = useEvents();
   const { currentUser } = useAuth();
 
-  // Filter events pending current user's approval role according to Sitemap & BPMN
+  // Filter events pending current user's approval role according to Sitemap và BPMN
   const queueEvents = events.filter((e) => {
     if (currentUser.role === 'BCN_KHOA') return e.status === 'FACULTY_REVIEW';
     if (currentUser.role === 'DOAN_TRUONG')
@@ -43,7 +43,7 @@ export const ApprovalQueuePage: React.FC = () => {
             <span className="text-[11px] text-slate-400">Không gian làm việc chuyên trách</span>
           </div>
           <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-            Hàng đợi xét duyệt & Thẩm định nghiệp vụ
+            Hàng đợi xét duyệt và Thẩm định nghiệp vụ
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Các hồ sơ đang chờ đơn vị bạn thẩm định, phê duyệt hoặc ra quyết định

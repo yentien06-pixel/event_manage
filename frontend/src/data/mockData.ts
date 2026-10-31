@@ -46,7 +46,7 @@ export const mockUsers: User[] = [
     email: 'csvc@eventflow.vn',
     fullName: 'Nguyễn Hữu Em',
     role: 'CSVC',
-    department: 'Phòng Cơ sở vật chất & Thiết bị',
+    department: 'Phòng Cơ sở vật chất và Thiết bị',
     phone: '0913888999',
   },
   {
@@ -107,7 +107,7 @@ export const mockFacilities: Facility[] = [
   {
     id: 'fac-5',
     code: 'SANH-T1',
-    name: 'Sảnh Khánh Tiết & Triển lãm Tầng 1',
+    name: 'Sảnh Khánh Tiết và Triển lãm Tầng 1',
     location: 'Tầng trệt, Khu Trung tâm',
     capacity: 350,
     type: 'OUTDOOR',
@@ -118,7 +118,7 @@ export const mockFacilities: Facility[] = [
   {
     id: 'fac-6',
     code: 'SAN-TT',
-    name: 'Sân Thể thao & Sự kiện Ngoài trời',
+    name: 'Sân Thể thao và Sự kiện Ngoài trời',
     location: 'Khu liên hợp Thể thao DUE',
     capacity: 1000,
     type: 'OUTDOOR',
@@ -163,9 +163,9 @@ export const initialEvents: EventItem[] = [
     createdAt: '2026-09-20T08:30:00Z',
     updatedAt: '2026-10-18T10:00:00Z',
     budgetItems: [
-      { id: 'b-1', category: 'In ấn & Truyền thông', itemName: 'Backdrop sân khấu & Standee', quantity: 1, unitPrice: 2500000, totalPrice: 2500000, actualQuantity: 1, actualPrice: 2400000, actualTotal: 2400000 },
+      { id: 'b-1', category: 'In ấn và Truyền thông', itemName: 'Backdrop sân khấu và Standee', quantity: 1, unitPrice: 2500000, totalPrice: 2500000, actualQuantity: 1, actualPrice: 2400000, actualTotal: 2400000 },
       { id: 'b-2', category: 'Giải thưởng', itemName: 'Tiền thưởng giải Nhất, Nhì, Ba', quantity: 1, unitPrice: 8000000, totalPrice: 8000000, actualQuantity: 1, actualPrice: 8000000, actualTotal: 8000000 },
-      { id: 'b-3', category: 'Tiệc & Nước uống', itemName: 'Nước suối và Teabreak ban giám khảo', quantity: 1, unitPrice: 1500000, totalPrice: 1500000, actualQuantity: 1, actualPrice: 1600000, actualTotal: 1600000 },
+      { id: 'b-3', category: 'Tiệc và Nước uống', itemName: 'Nước suối và Teabreak ban giám khảo', quantity: 1, unitPrice: 1500000, totalPrice: 1500000, actualQuantity: 1, actualPrice: 1600000, actualTotal: 1600000 },
     ],
     scheduleItems: [
       { id: 's-1', timeSlot: '07:30 - 08:00', activity: 'Đón tiếp đại biểu và thí sinh', responsible: 'Ban Lễ tân' },
@@ -189,7 +189,7 @@ export const initialEvents: EventItem[] = [
       { id: 'h-2', fromStatus: 'SUBMITTED', toStatus: 'FACULTY_APPROVED', action: 'BCN Khoa duyệt nội dung', actorId: 'u-bcn', actorName: 'PGS.TS. Lê Văn Cường', actorRole: 'BCN_KHOA', comments: 'Kế hoạch tốt, đồng ý chủ trương.', timestamp: '2026-09-22T09:15:00Z' },
       { id: 'h-3', fromStatus: 'FACULTY_APPROVED', toStatus: 'PERMIT_ISSUED', action: 'Đoàn trường cấp phép', actorId: 'u-doan', actorName: 'ThS. Phạm Thị Dung', actorRole: 'DOAN_TRUONG', comments: 'Cấp phép tổ chức chính thức.', timestamp: '2026-09-25T14:00:00Z' },
       { id: 'h-4', fromStatus: 'PERMIT_ISSUED', toStatus: 'FACILITY_RESERVED', action: 'CSVC duyệt giữ chỗ hội trường', actorId: 'u-csvc', actorName: 'Nguyễn Hữu Em', actorRole: 'CSVC', timestamp: '2026-09-26T10:00:00Z' },
-      { id: 'h-5', fromStatus: 'FACILITY_RESERVED', toStatus: 'COMPLETED', action: 'Hoàn tất nghiệm thu & thanh quyết toán', actorId: 'u-khtc', actorName: 'Trần Văn Phúc', actorRole: 'KHTC', timestamp: '2026-10-18T10:00:00Z' },
+      { id: 'h-5', fromStatus: 'FACILITY_RESERVED', toStatus: 'COMPLETED', action: 'Hoàn tất nghiệm thu và thanh quyết toán', actorId: 'u-khtc', actorName: 'Trần Văn Phúc', actorRole: 'KHTC', timestamp: '2026-10-18T10:00:00Z' },
     ],
     decisions: [
       { id: 'dec-1', stage: 'BCN Khoa xét duyệt', decision: 'APPROVED', comments: 'Kế hoạch học thuật bổ ích.', actorName: 'PGS.TS. Lê Văn Cường', actorRole: 'BCN_KHOA', createdAt: '2026-09-22T09:15:00Z' },
@@ -222,7 +222,7 @@ export const initialEvents: EventItem[] = [
   {
     id: 'ev-2',
     eventCode: 'EV-2024-002',
-    title: 'Ngày hội Việc làm & Kết nối Doanh nghiệp Career Fair 2024',
+    title: 'Ngày hội Việc làm và Kết nối Doanh nghiệp Career Fair 2024',
     description: 'Quy tụ hơn 30 doanh nghiệp tài chính, ngân hàng, công nghệ thông tin tuyển dụng trực tiếp và định hướng nghề nghiệp cho sinh viên năm 3, năm 4.',
     objectives: 'Kết nối việc làm cho tối thiểu 300 sinh viên sắp tốt nghiệp, ký kết biên bản ghi nhớ hợp tác đào tạo với doanh nghiệp đối tác.',
     targetAudience: 'Sinh viên năm 3, năm 4 và cựu sinh viên DUE',
@@ -246,7 +246,7 @@ export const initialEvents: EventItem[] = [
       { id: 'b-23', category: 'Âm thanh ánh sáng', itemName: 'Thuê hệ thống sân khấu ngoài trời', quantity: 1, unitPrice: 8000000, totalPrice: 8000000 },
     ],
     scheduleItems: [
-      { id: 's-21', timeSlot: '07:30 - 08:30', activity: 'Khai mạc và Ký kết MOU với Doanh nghiệp', responsible: 'BCN Khoa & Ban Đối ngoại' },
+      { id: 's-21', timeSlot: '07:30 - 08:30', activity: 'Khai mạc và Ký kết MOU với Doanh nghiệp', responsible: 'BCN Khoa và Ban Đối ngoại' },
       { id: 's-22', timeSlot: '08:30 - 11:30', activity: 'Phỏng vấn tuyển dụng trực tiếp tại các gian hàng', responsible: 'Các Doanh nghiệp' },
       { id: 's-23', timeSlot: '13:30 - 16:30', activity: 'Tọa đàm: Bí quyết chinh phục nhà tuyển dụng', responsible: 'Diễn giả khách mời' },
     ],
@@ -272,7 +272,7 @@ export const initialEvents: EventItem[] = [
   {
     id: 'ev-3',
     eventCode: 'EV-2024-003',
-    title: 'Workshop Khởi nghiệp & Đổi mới sáng tạo DUE InnoLab',
+    title: 'Workshop Khởi nghiệp và Đổi mới sáng tạo DUE InnoLab',
     description: 'Chuyên đề huấn luyện phương pháp Design Thinking và xây dựng mô hình kinh doanh Canvas cho các dự án khởi nghiệp sinh viên.',
     objectives: 'Hoàn thiện hồ sơ cho 10 dự án tham gia cuộc thi Khởi nghiệp Đổi mới sáng tạo cấp thành phố.',
     targetAudience: 'Các nhóm sinh viên có đề án khởi nghiệp',
@@ -291,7 +291,7 @@ export const initialEvents: EventItem[] = [
     createdAt: '2026-10-15T09:00:00Z',
     updatedAt: '2026-10-22T14:30:00Z',
     budgetItems: [
-      { id: 'b-31', category: 'Học liệu & Công cụ', itemName: 'Bộ kit Design Thinking, giấy Post-it, bút dạ', quantity: 10, unitPrice: 300000, totalPrice: 3000000 },
+      { id: 'b-31', category: 'Học liệu và Công cụ', itemName: 'Bộ kit Design Thinking, giấy Post-it, bút dạ', quantity: 10, unitPrice: 300000, totalPrice: 3000000 },
       { id: 'b-32', category: 'Bồi dưỡng chuyên gia', itemName: 'Thù lao chuyên gia huấn luyện (4 giờ)', quantity: 1, unitPrice: 4000000, totalPrice: 4000000 },
     ],
     scheduleItems: [
@@ -320,7 +320,7 @@ export const initialEvents: EventItem[] = [
   {
     id: 'ev-4',
     eventCode: 'EV-2024-004',
-    title: 'Lễ Tuyên dương Sinh viên 5 Tốt & Chào đón Tân Sinh viên K50',
+    title: 'Lễ Tuyên dương Sinh viên 5 Tốt và Chào đón Tân Sinh viên K50',
     description: 'Chương trình thường niên vinh danh các cá nhân, tập thể có thành tích xuất sắc trong học tập, nghiên cứu và rèn luyện đạo đức năm học 2023 - 2024.',
     objectives: 'Tuyên dương 120 danh hiệu Sinh viên 5 Tốt cấp trường và cấp thành phố.',
     targetAudience: 'Toàn thể sinh viên và cán bộ Đoàn - Hội các khóa',
@@ -340,10 +340,10 @@ export const initialEvents: EventItem[] = [
     updatedAt: '2026-10-24T16:00:00Z',
     budgetItems: [
       { id: 'b-41', category: 'Khen thưởng', itemName: 'Kỷ niệm chương và giấy khen Sv 5 Tốt', quantity: 120, unitPrice: 150000, totalPrice: 18000000 },
-      { id: 'b-42', category: 'Văn nghệ', itemName: 'Thuê trang phục biểu diễn & đạo cụ văn nghệ', quantity: 5, unitPrice: 1200000, totalPrice: 6000000 },
+      { id: 'b-42', category: 'Văn nghệ', itemName: 'Thuê trang phục biểu diễn và đạo cụ văn nghệ', quantity: 5, unitPrice: 1200000, totalPrice: 6000000 },
     ],
     scheduleItems: [
-      { id: 's-41', timeSlot: '18:00 - 18:30', activity: 'Chào cờ & Chiếu phóng sự tổng kết năm học', responsible: 'Ban Tổ chức' },
+      { id: 's-41', timeSlot: '18:00 - 18:30', activity: 'Chào cờ và Chiếu phóng sự tổng kết năm học', responsible: 'Ban Tổ chức' },
       { id: 's-42', timeSlot: '18:30 - 20:30', activity: 'Lễ Tuyên dương và Trao giấy chứng nhận', responsible: 'Đoàn trường' },
       { id: 's-43', timeSlot: '20:30 - 21:30', activity: 'Giao lưu văn nghệ Tân sinh viên', responsible: 'Đội Văn nghệ xung kích' },
     ],
@@ -390,7 +390,7 @@ export const initialEvents: EventItem[] = [
     createdAt: '2026-10-12T11:00:00Z',
     updatedAt: '2026-10-25T11:00:00Z',
     budgetItems: [
-      { id: 'b-51', category: 'Sân khấu & Âm thanh', itemName: 'Hệ thống âm thanh biểu diễn ngoài trời', quantity: 1, unitPrice: 20000000, totalPrice: 20000000 },
+      { id: 'b-51', category: 'Sân khấu và Âm thanh', itemName: 'Hệ thống âm thanh biểu diễn ngoài trời', quantity: 1, unitPrice: 20000000, totalPrice: 20000000 },
     ],
     scheduleItems: [
       { id: 's-51', timeSlot: '18:00 - 22:00', activity: 'Đêm nhạc acoustic và biểu diễn nhóm nhảy', responsible: 'CLB Âm nhạc' },
@@ -408,14 +408,14 @@ export const initialEvents: EventItem[] = [
     history: [
       { id: 'h-51', fromStatus: 'DRAFT', toStatus: 'SUBMITTED', action: 'Nộp hồ sơ', actorId: 'u-btc2', actorName: 'Trần Thị Bình', actorRole: 'BTC', timestamp: '2026-10-12T11:00:00Z' },
       { id: 'h-52', fromStatus: 'SUBMITTED', toStatus: 'FACULTY_APPROVED', action: 'Khoa duyệt', actorId: 'u-bcn', actorName: 'PGS.TS. Lê Văn Cường', actorRole: 'BCN_KHOA', timestamp: '2026-10-16T15:00:00Z' },
-      { id: 'h-53', fromStatus: 'FACULTY_APPROVED', toStatus: 'FACILITY_CONFLICT', action: 'CSVC phát hiện xung đột lịch', actorId: 'u-csvc', actorName: 'Nguyễn Hữu Em', actorRole: 'CSVC', comments: 'Phòng Hội trường A đã có lịch đặt trước cho sự kiện EV-2024-004. Đề nghị chuyển sang Sân Thể thao & Sự kiện Ngoài trời.', timestamp: '2026-10-25T11:00:00Z' },
+      { id: 'h-53', fromStatus: 'FACULTY_APPROVED', toStatus: 'FACILITY_CONFLICT', action: 'CSVC phát hiện xung đột lịch', actorId: 'u-csvc', actorName: 'Nguyễn Hữu Em', actorRole: 'CSVC', comments: 'Phòng Hội trường A đã có lịch đặt trước cho sự kiện EV-2024-004. Đề nghị chuyển sang Sân Thể thao và Sự kiện Ngoài trời.', timestamp: '2026-10-25T11:00:00Z' },
     ],
     decisions: [],
   },
   {
     id: 'ev-6',
     eventCode: 'EV-2024-006',
-    title: 'Hội thảo Quốc tế Chuyển đổi số trong Tài chính & Ngân hàng',
+    title: 'Hội thảo Quốc tế Chuyển đổi số trong Tài chính và Ngân hàng',
     description: 'Hội thảo khoa học quy tụ các học giả và chuyên gia tài chính hàng đầu phân tích xu hướng FinTech và AI trong quản trị rủi ro ngân hàng.',
     objectives: 'Công bố kỷ yếu hội thảo khoa học có chỉ số ISBN, kết nối hợp tác nghiên cứu.',
     targetAudience: 'Giảng viên, nghiên cứu sinh và sinh viên ngành Tài chính - Ngân hàng',
@@ -435,10 +435,10 @@ export const initialEvents: EventItem[] = [
     updatedAt: '2026-10-25T09:00:00Z',
     budgetItems: [
       { id: 'b-61', category: 'Tài liệu khoa học', itemName: 'In kỷ yếu hội thảo bìa cứng mạ vàng', quantity: 150, unitPrice: 120000, totalPrice: 18000000 },
-      { id: 'b-62', category: 'Tiếp đón chuyên gia', itemName: 'Khách sạn & đưa đón chuyên gia quốc tế', quantity: 2, unitPrice: 4500000, totalPrice: 9000000 },
+      { id: 'b-62', category: 'Tiếp đón chuyên gia', itemName: 'Khách sạn và đưa đón chuyên gia quốc tế', quantity: 2, unitPrice: 4500000, totalPrice: 9000000 },
     ],
     scheduleItems: [
-      { id: 's-61', timeSlot: '08:00 - 08:30', activity: 'Đón tiếp đại biểu & phát tài liệu', responsible: 'Ban Thư ký' },
+      { id: 's-61', timeSlot: '08:00 - 08:30', activity: 'Đón tiếp đại biểu và phát tài liệu', responsible: 'Ban Thư ký' },
       { id: 's-62', timeSlot: '08:30 - 11:30', activity: 'Phiên toàn thể: Báo cáo tham luận chính', responsible: 'Chủ tọa đoàn' },
     ],
     booking: {
@@ -474,7 +474,7 @@ export const initialEvents: EventItem[] = [
     contactPhone: '0935333444',
     startDate: '2026-10-20T07:00:00Z',
     endDate: '2026-10-24T18:00:00Z',
-    preferredVenue: 'Sân Thể thao & Sự kiện Ngoài trời',
+    preferredVenue: 'Sân Thể thao và Sự kiện Ngoài trời',
     status: 'FACILITY_RETURN_PENDING',
     currentVersion: 1,
     createdById: 'u-btc2',
@@ -482,8 +482,8 @@ export const initialEvents: EventItem[] = [
     createdAt: '2026-09-15T10:00:00Z',
     updatedAt: '2026-10-25T18:00:00Z',
     budgetItems: [
-      { id: 'b-71', category: 'Trọng tài & Y tế', itemName: 'Thù lao tổ trọng tài chuyên nghiệp', quantity: 30, unitPrice: 300000, totalPrice: 9000000 },
-      { id: 'b-72', category: 'Cúp & Huy chương', itemName: 'Bộ cúp vô địch, cờ lưu niệm và huy chương', quantity: 1, unitPrice: 4500000, totalPrice: 4500000 },
+      { id: 'b-71', category: 'Trọng tài và Y tế', itemName: 'Thù lao tổ trọng tài chuyên nghiệp', quantity: 30, unitPrice: 300000, totalPrice: 9000000 },
+      { id: 'b-72', category: 'Cúp và Huy chương', itemName: 'Bộ cúp vô địch, cờ lưu niệm và huy chương', quantity: 1, unitPrice: 4500000, totalPrice: 4500000 },
     ],
     scheduleItems: [
       { id: 's-71', timeSlot: '07:30 - 08:00', activity: 'Khai mạc giải đấu', responsible: 'Ban Tổ chức' },
@@ -491,7 +491,7 @@ export const initialEvents: EventItem[] = [
     booking: {
       id: 'bk-7',
       facilityId: 'fac-6',
-      facilityName: 'Sân Thể thao & Sự kiện Ngoài trời',
+      facilityName: 'Sân Thể thao và Sự kiện Ngoài trời',
       startTime: '2026-10-20T06:30:00Z',
       endTime: '2026-10-24T18:30:00Z',
       status: 'CONFIRMED',
@@ -519,7 +519,7 @@ export const initialEvents: EventItem[] = [
     contactPhone: '0914222333',
     startDate: '2026-08-01T06:00:00Z',
     endDate: '2026-08-10T18:00:00Z',
-    preferredVenue: 'Sảnh Khánh Tiết & Triển lãm Tầng 1',
+    preferredVenue: 'Sảnh Khánh Tiết và Triển lãm Tầng 1',
     status: 'FINANCE_REVIEW',
     currentVersion: 1,
     createdById: 'u-btc1',
@@ -589,7 +589,7 @@ export const mockNotifications: NotificationItem[] = [
     targetRole: 'BCN_KHOA',
     eventId: 'ev-2',
     title: 'Hồ sơ mới cần xét duyệt',
-    content: 'Sự kiện "Ngày hội Việc làm & Kết nối Doanh nghiệp Career Fair 2024" (EV-2024-002) vừa được nộp và đang chờ Khoa xét duyệt.',
+    content: 'Sự kiện "Ngày hội Việc làm và Kết nối Doanh nghiệp Career Fair 2024" (EV-2024-002) vừa được nộp và đang chờ Khoa xét duyệt.',
     type: 'ACTION_REQUIRED',
     isRead: false,
     createdAt: '2026-10-21T08:05:00Z',
@@ -601,7 +601,7 @@ export const mockNotifications: NotificationItem[] = [
     targetRole: 'BTC',
     eventId: 'ev-3',
     title: 'Hồ sơ yêu cầu chỉnh sửa',
-    content: 'BCN Khoa yêu cầu chỉnh sửa hồ sơ "Workshop Khởi nghiệp & Đổi mới sáng tạo DUE InnoLab" (EV-2024-003). Lý do: Bổ sung CV diễn giả.',
+    content: 'BCN Khoa yêu cầu chỉnh sửa hồ sơ "Workshop Khởi nghiệp và Đổi mới sáng tạo DUE InnoLab" (EV-2024-003). Lý do: Bổ sung CV diễn giả.',
     type: 'WARNING',
     isRead: false,
     createdAt: '2026-10-22T14:30:00Z',
@@ -636,7 +636,7 @@ export const mockNotifications: NotificationItem[] = [
     userId: 'u-csvc',
     targetRole: 'CSVC',
     eventId: 'ev-7',
-    title: 'Yêu cầu kiểm tra & nghiệm thu hoàn trả CSVC',
+    title: 'Yêu cầu kiểm tra và nghiệm thu hoàn trả CSVC',
     content: 'Sự kiện "Giải Bóng đá Sinh viên" (EV-2024-007) đã kết thúc, đang chờ CSVC nghiệm thu hoàn trả sân thể thao và loa kéo.',
     type: 'ACTION_REQUIRED',
     isRead: true,
