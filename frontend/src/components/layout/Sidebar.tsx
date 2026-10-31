@@ -1,25 +1,22 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   CalendarDays,
-  PlusCircle,
   CheckSquare,
   Building2,
   CalendarRange,
   ClipboardCheck,
   Receipt,
   FileBarChart2,
-  Sparkles,
   BarChart3,
   Users,
   Settings,
-  Bell,
-} from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useEvents } from '../../contexts/EventContext';
-import { roleNames } from '../../utils/helpers';
-import { UserRole } from '../../types';
+  X,
+} from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEvents } from "../../contexts/EventContext";
+import { UserRole } from "../../types";
 
 interface NavItemDef {
   to: string;
@@ -30,139 +27,131 @@ interface NavItemDef {
   badgeText?: string;
 }
 
-export const Sidebar: React.FC = () => {
-  const { currentUser } = useAuth();
-  const { events, notifications } = useEvents();
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
-  // Calculate pending items for current user's role
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
+  const { currentUser } = useAuth();
+  const { events } = useEvents();
+
+  // Đếm số lượng hồ sơ đang chờ duyệt tương ứng với vai trò của người dùng
   const pendingCount = events.filter((e) => {
-    if (currentUser.role === 'BCN_KHOA') return e.status === 'FACULTY_REVIEW';
-    if (currentUser.role === 'DOAN_TRUONG')
-      return e.status === 'UNIVERSITY_REVIEW' || e.status === 'BUDGET_REVIEW' || e.status === 'FACULTY_APPROVED';
-    if (currentUser.role === 'CSVC')
-      return e.status === 'FACILITY_REVIEW' || e.status === 'FACILITY_RETURN_PENDING' || e.status === 'PERMIT_ISSUED';
-    if (currentUser.role === 'KHTC')
-      return e.status === 'FINANCE_REVIEW' || e.status === 'FINANCE_APPROVAL_PENDING';
-    if (currentUser.role === 'BTC')
-      return e.status.includes('REVISION_REQUESTED') || e.status === 'FACILITY_CONFLICT';
+    if (currentUser.role === "BCN_KHOA") return e.status === "FACULTY_REVIEW";
+    if (currentUser.role === "DOAN_TRUONG") return e.status === "UNIVERSITY_REVIEW" || e.status === "BUDGET_REVIEW" || e.status === "FACULTY_APPROVED";
+    if (currentUser.role === "CSVC") return e.status === "FACILITY_REVIEW" || e.status === "FACILITY_RETURN_PENDING" || e.status === "PERMIT_ISSUED";
+    if (currentUser.role === "KHTC") return e.status === "FINANCE_REVIEW" || e.status === "FINANCE_APPROVAL_PENDING";
+    if (currentUser.role === "BTC") return e.status.includes("REVISION_REQUESTED") || e.status === "FACILITY_CONFLICT";
     return false;
   }).length;
 
-  const unreadNotifs = notifications.filter((n) => !n.isRead).length;
-
-  // Định nghĩa danh mục menu kèm vai trò được phép truy cập theo Sitemap
+  // Danh mục menu chuẩn hóa, tối giản, KHÔNG trùng lặp theo từng vai trò
   const navItems: NavItemDef[] = [
-    { 
-      to: '/', 
-      label: 'Tổng quan hệ thống', 
-      icon: LayoutDashboard 
-    },
-    { 
-      to: '/events', 
-      label: currentUser.role === 'BTC' ? 'Hồ sơ sự kiện của tôi' : 'Danh sách hồ sơ sự kiện', 
-      icon: CalendarDays 
-    },
-    { 
-      to: '/events/create', 
-      label: 'Tạo hồ sơ sự kiện mới', 
-      icon: PlusCircle, 
-      roles: ['BTC', 'ADMIN'] 
+    {
+      to: "/",
+      label: "Tổng quan hệ thống",
+      icon: LayoutDashboard,
     },
     {
-      to: '/approvals',
-      label: 'Hàng đợi xét duyệt',
+      to: "/approvals",
+      label: "Hàng đợi xét duyệt",
       icon: CheckSquare,
-      roles: ['BCN_KHOA', 'DOAN_TRUONG', 'CSVC', 'KHTC', 'ADMIN'],
+      roles: ["BCN_KHOA", "DOAN_TRUONG", "CSVC", "KHTC", "ADMIN"],
       badge: pendingCount > 0 ? pendingCount : undefined,
     },
-    { 
-      to: '/calendar', 
-      label: 'Lịch hội trường & CSVC', 
-      icon: CalendarRange 
+    {
+      to: "/events",
+      label: "Hồ sơ sự kiện",
+      icon: CalendarDays,
     },
-    { 
-      to: '/facilities', 
-      label: 'Danh mục phòng & Thiết bị', 
-      icon: Building2, 
-      roles: ['CSVC', 'ADMIN'] 
+    {
+      to: "/calendar",
+      label: "Lịch hội trường & CSVC",
+      icon: CalendarRange,
     },
-    { 
-      to: '/handover', 
-      label: 'Bàn giao & Nghiệm thu', 
-      icon: ClipboardCheck, 
-      roles: ['CSVC', 'BTC', 'ADMIN'] 
+    {
+      to: "/facilities",
+      label: "Danh mục phòng & Thiết bị",
+      icon: Building2,
+      roles: ["CSVC", "ADMIN"],
     },
-    { 
-      to: '/settlements', 
-      label: 'Quyết toán tài chính', 
-      icon: Receipt, 
-      roles: ['KHTC', 'BTC', 'ADMIN'] 
+    {
+      to: "/handover",
+      label: "Bàn giao & Nghiệm thu",
+      icon: ClipboardCheck,
+      roles: ["CSVC", "BTC", "ADMIN"],
     },
-    { 
-      to: '/reports', 
-      label: 'Báo cáo tổng kết', 
-      icon: FileBarChart2, 
-      roles: ['BTC', 'DOAN_TRUONG', 'ADMIN'] 
+    {
+      to: "/settlements",
+      label: "Quyết toán tài chính",
+      icon: Receipt,
+      roles: ["KHTC", "BTC", "ADMIN"],
     },
-    { 
-      to: '/ai-review', 
-      label: 'Trợ lý AI rà soát', 
-      icon: Sparkles, 
-      badgeText: 'AI',
-      roles: ['BTC', 'DOAN_TRUONG', 'BCN_KHOA', 'CSVC', 'KHTC', 'ADMIN'] 
+    {
+      to: "/reports",
+      label: "Báo cáo tổng kết",
+      icon: FileBarChart2,
+      roles: ["BTC", "DOAN_TRUONG", "ADMIN"],
     },
-    { 
-      to: '/analytics', 
-      label: 'Báo cáo & Đo lường KPI', 
-      icon: BarChart3, 
-      roles: ['BCN_KHOA', 'DOAN_TRUONG', 'CSVC', 'KHTC', 'ADMIN'] 
-    },
-    { 
-      to: '/notifications', 
-      label: 'Thông báo', 
-      icon: Bell, 
-      badge: unreadNotifs > 0 ? unreadNotifs : undefined 
+    {
+      to: "/analytics",
+      label: "Báo cáo & Đo lường KPI",
+      icon: BarChart3,
+      roles: ["BCN_KHOA", "DOAN_TRUONG", "CSVC", "KHTC", "ADMIN"],
     },
   ];
 
   const adminNavItems: NavItemDef[] = [
-    { to: '/admin/users', label: 'Quản trị người dùng & RBAC', icon: Users, roles: ['ADMIN'] },
-    { to: '/admin/settings', label: 'Cấu hình hệ thống & Tham số', icon: Settings, roles: ['ADMIN'] },
+    { to: "/admin/users", label: "Quản trị người dùng & RBAC", icon: Users, roles: ["ADMIN"] },
+    { to: "/admin/settings", label: "Cấu hình hệ thống & Tham số", icon: Settings, roles: ["ADMIN"] },
   ];
 
-  // LỌC CHẶT CHẼ: Chỉ những mục menu mà vai trò hiện tại ĐƯỢC PHÉP mới hiển thị lên Sidebar
-  const visibleNavItems = navItems.filter(
-    (item) => !item.roles || item.roles.includes(currentUser.role)
-  );
+  // LỌC CHẶT CHẼ: Chỉ những mục menu phù hợp với vai trò hiện tại
+  const visibleNavItems = navItems.filter((item) => !item.roles || item.roles.includes(currentUser.role));
 
-  return (
-    <aside className="w-64 bg-[#062c51] text-slate-200 flex flex-col shrink-0 h-screen sticky top-0 border-r border-[#04203b] z-30 select-none">
-      {/* Brand Header with DUE Crest */}
-      <div className="p-4 border-b border-[#04203b] flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
-          <img
-            src="/images/due_logo_emblem.png"
-            alt="DUE Emblem"
-            className="w-full h-full object-contain"
-            onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
-            }}
-          />
-        </div>
-        <div className="min-w-0">
-          <div className="font-bold text-white tracking-tight flex items-center gap-1.5 text-base">
-            <span>MY DUE</span>
-            <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[#075ea1] text-white">
-              EventFlow
-            </span>
+  const renderContent = (isMobile = false) => (
+    <div className="flex flex-col h-full">
+      {/* Brand Header: Logo DUE + 2 dòng tên trường theo nhận diện chính thức */}
+      <div className="p-3.5 border-b border-[#04203b] flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
+            <img
+              src="/images/due_logo_emblem.png"
+              alt="Logo DUE"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = "none";
+              }}
+            />
           </div>
-          <div className="text-[10px] text-blue-200 font-medium truncate">Đại học Kinh tế – ĐHĐN</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-bold tracking-wider text-blue-200/90 uppercase leading-none truncate">
+              ĐẠI HỌC ĐÀ NẴNG
+            </div>
+            <div className="text-xs font-bold text-white tracking-tight leading-tight mt-0.5 truncate">
+              TRƯỜNG ĐH KINH TẾ
+            </div>
+            <div className="text-[9px] text-blue-300/80 leading-none mt-1 truncate">
+              Quản lý quy trình sự kiện
+            </div>
+          </div>
         </div>
+
+        {isMobile && (
+          <button
+            onClick={onClose}
+            aria-label="Đóng thanh điều hướng"
+            className="p-1 rounded-lg text-blue-300 hover:text-white hover:bg-blue-900/60 transition-colors shrink-0 cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
-      {/* Navigation Links */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-        <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/70 flex items-center justify-between">
+      {/* Navigation Links - flex-1 điền đầy chiều cao mà không cần khối tài khoản ở cuối */}
+      <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1">
+        <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/70 flex items-center justify-between mb-1">
           <span>Quyền hạn vai trò</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/80 text-blue-200 font-bold border border-blue-400/30">
             {currentUser.role}
@@ -175,12 +164,15 @@ export const Sidebar: React.FC = () => {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
+              end={item.to === "/"}
+              onClick={() => {
+                if (isMobile && onClose) onClose();
+              }}
               className={({ isActive }) =>
-                `flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                `flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#075ea1] text-white shadow-sm font-semibold'
-                    : 'text-slate-200 hover:bg-[#0b4379]/70 hover:text-white'
+                    ? "bg-[#075ea1] text-white shadow-xs font-semibold"
+                    : "text-slate-200 hover:bg-[#0b4379]/70 hover:text-white"
                 }`
               }
             >
@@ -189,12 +181,12 @@ export const Sidebar: React.FC = () => {
                 <span className="truncate">{item.label}</span>
               </div>
               {item.badge !== undefined && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-[#ea580c] text-white min-w-5 text-center shrink-0">
+                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-[#ea580c] text-white min-w-4 text-center shrink-0">
                   {item.badge}
                 </span>
               )}
               {item.badgeText && (
-                <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 shrink-0">
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded-md bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 shrink-0">
                   {item.badgeText}
                 </span>
               )}
@@ -202,9 +194,9 @@ export const Sidebar: React.FC = () => {
           );
         })}
 
-        {currentUser.role === 'ADMIN' && (
+        {currentUser.role === "ADMIN" && (
           <>
-            <div className="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/70">
+            <div className="px-2.5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/70">
               Phân hệ Quản trị (Admin)
             </div>
             {adminNavItems.map((item) => {
@@ -213,11 +205,12 @@ export const Sidebar: React.FC = () => {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  onClick={() => {
+                    if (isMobile && onClose) onClose();
+                  }}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-[#075ea1] text-white font-semibold'
-                        : 'text-slate-200 hover:bg-[#0b4379]/70 hover:text-white'
+                    `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive ? "bg-[#075ea1] text-white font-semibold" : "text-slate-200 hover:bg-[#0b4379]/70 hover:text-white"
                     }`
                   }
                 >
@@ -229,19 +222,30 @@ export const Sidebar: React.FC = () => {
           </>
         )}
       </div>
+    </div>
+  );
 
-      {/* User Profile Widget */}
-      <div className="p-3 border-t border-[#04203b] bg-[#04203b]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#075ea1] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-            {currentUser.fullName ? currentUser.fullName.charAt(0) : 'U'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-white truncate">{currentUser.fullName || 'Người dùng'}</div>
-            <div className="text-[10px] text-blue-200 truncate font-semibold">{roleNames[currentUser.role] || currentUser.role}</div>
+  return (
+    <>
+      {/* ── Desktop Sticky Sidebar (Visible on >= 1024px) ── */}
+      <aside className="hidden lg:flex w-60 xl:w-64 bg-[#062c51] text-slate-200 flex-col shrink-0 h-screen sticky top-0 border-r border-[#04203b] z-30 select-none">
+        {renderContent(false)}
+      </aside>
+
+      {/* ── Mobile / Tablet Drawer (Visible when isOpen is true on < 1024px) ── */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300"
+            onClick={onClose}
+          />
+          {/* Drawer Slide-out */}
+          <div className="relative w-64 max-w-[80vw] bg-[#062c51] text-slate-200 flex flex-col h-full shadow-2xl z-10 select-none">
+            {renderContent(true)}
           </div>
         </div>
-      </div>
-    </aside>
+      )}
+    </>
   );
 };

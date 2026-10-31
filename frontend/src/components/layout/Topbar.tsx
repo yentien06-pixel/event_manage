@@ -9,12 +9,17 @@ import {
   ChevronRight,
   Home,
   LogOut,
+  Menu,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEvents } from '../../contexts/EventContext';
 import { formatDateTime } from '../../utils/helpers';
 
-export const Topbar: React.FC = () => {
+interface TopbarProps {
+  onToggleSidebar?: () => void;
+}
+
+export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, switchUser, allUsers, logout } = useAuth();
@@ -26,7 +31,7 @@ export const Topbar: React.FC = () => {
 
   const unreadNotifs = notifications.filter((n) => !n.isRead);
 
-  // Dynamic Breadcrumb generation reflecting Content Awareness (Chuong 6)
+  // Dynamic Breadcrumb generation
   const breadcrumb = useMemo(() => {
     const path = location.pathname;
     if (path === '/') return [{ label: 'Trang chủ', path: '/' }, { label: 'Tổng quan hệ thống' }];
@@ -37,7 +42,7 @@ export const Topbar: React.FC = () => {
     if (path.startsWith('/events/'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Hồ sơ sự kiện', path: '/events' }, { label: 'Chi tiết hồ sơ' }];
     if (path.startsWith('/events'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Danh sách hồ sơ sự kiện' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Hồ sơ sự kiện' }];
     if (path.startsWith('/approvals'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Hàng đợi xét duyệt & Thẩm định' }];
     if (path.startsWith('/calendar'))
@@ -51,7 +56,7 @@ export const Topbar: React.FC = () => {
     if (path.startsWith('/reports'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Báo cáo tổng kết' }];
     if (path.startsWith('/ai-review'))
-      return [{ label: 'Trang chủ', path: '/' }, { label: 'Trợ lý AI rà soát hồ sơ' }];
+      return [{ label: 'Trang chủ', path: '/' }, { label: 'Trợ lý AI rà soát' }];
     if (path.startsWith('/analytics'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Báo cáo & Thống kê KPI' }];
     if (path.startsWith('/notifications'))
@@ -60,7 +65,7 @@ export const Topbar: React.FC = () => {
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Quản trị người dùng & RBAC' }];
     if (path.startsWith('/admin/settings'))
       return [{ label: 'Trang chủ', path: '/' }, { label: 'Cấu hình tham số hệ thống' }];
-    return [{ label: 'Trang chủ', path: '/' }, { label: 'Hệ thống EventFlow' }];
+    return [{ label: 'Trang chủ', path: '/' }, { label: 'Quản lý quy trình sự kiện' }];
   }, [location.pathname]);
 
   // Filter events based on search query
@@ -74,26 +79,37 @@ export const Topbar: React.FC = () => {
     : [];
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
-      {/* Left: Content Awareness Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-        <Home className="w-3.5 h-3.5 text-slate-400" />
-        {breadcrumb.map((crumb, idx) => (
-          <React.Fragment key={idx}>
-            {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300" />}
-            {crumb.path ? (
-              <Link to={crumb.path} className="hover:text-[#075F9F] transition-colors">
-                {crumb.label}
-              </Link>
-            ) : (
-              <span className="font-semibold text-slate-800">{crumb.label}</span>
-            )}
-          </React.Fragment>
-        ))}
-      </nav>
+    <header className="h-14 sm:h-15 bg-white border-b border-slate-200/80 px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
+      {/* Left: Mobile Menu Button & Breadcrumbs */}
+      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 mr-2 flex-1 sm:flex-none">
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          aria-label="Mở menu điều hướng"
+          className="lg:hidden p-1.5 -ml-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer shrink-0"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
 
-      {/* Middle: Quick Search */}
-      <div className="relative w-72 hidden md:block">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1 sm:gap-1.5 text-xs text-slate-500 font-medium truncate">
+          <Home className="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:block" />
+          {breadcrumb.map((crumb, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0 hidden sm:block" />}
+              {crumb.path ? (
+                <Link to={crumb.path} className="hover:text-[#075F9F] transition-colors truncate hidden sm:inline">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="font-semibold text-slate-800 truncate text-xs">{crumb.label}</span>
+              )}
+            </React.Fragment>
+          ))}
+        </nav>
+      </div>
+
+      {/* Middle: Quick Search (Desktop) */}
+      <div className="relative w-60 lg:w-72 hidden md:block shrink-0 mx-2">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           type="text"
@@ -130,7 +146,7 @@ export const Topbar: React.FC = () => {
       </div>
 
       {/* Right: Actions & User Menu */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Reset Demo Data Button */}
         <button
           onClick={() => {
@@ -138,7 +154,7 @@ export const Topbar: React.FC = () => {
               resetAllData();
             }
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-[#075F9F] bg-slate-100 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-[#075F9F] bg-slate-100 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
           title="Khôi phục dữ liệu ban đầu để demo"
         >
           <RotateCcw className="w-3.5 h-3.5" />
@@ -150,18 +166,18 @@ export const Topbar: React.FC = () => {
           <button
             onClick={() => setShowNotifMenu(!showNotifMenu)}
             aria-label="Thông báo hệ thống"
-            className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-600 transition-colors relative cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-600 transition-colors relative cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             {unreadNotifs.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#DC2626] text-white rounded-full text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-[#DC2626] text-white rounded-full text-[9px] sm:text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
                 {unreadNotifs.length}
               </span>
             )}
           </button>
 
           {showNotifMenu && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
               <div className="p-3.5 bg-[#0B1727] text-white flex items-center justify-between">
                 <div className="text-xs font-bold uppercase tracking-wider">Thông báo hệ thống</div>
                 {unreadNotifs.length > 0 && (
@@ -207,16 +223,16 @@ export const Topbar: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors border border-slate-200/60 cursor-pointer"
+            className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2 pr-2 sm:pr-3 py-1 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors border border-slate-200/60 cursor-pointer"
           >
             <div className="w-7 h-7 rounded-lg bg-[#075F9F] text-white flex items-center justify-center font-bold text-xs">
-              {currentUser.fullName.charAt(0)}
+              {currentUser.fullName ? currentUser.fullName.charAt(0) : 'U'}
             </div>
             <div className="text-left hidden sm:block">
-              <div className="text-xs font-bold text-slate-800 leading-tight">{currentUser.fullName}</div>
+              <div className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px]">{currentUser.fullName}</div>
               <div className="text-[10px] text-[#075F9F] font-semibold">{currentUser.role}</div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
           </button>
 
           {showUserMenu && (

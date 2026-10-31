@@ -341,7 +341,7 @@ export const EventCreatePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Tạo hồ sơ sự kiện mới</h1>
@@ -351,7 +351,7 @@ export const EventCreatePage: React.FC = () => {
       </div>
 
       {/* Steps Indicator */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+      <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs overflow-x-auto">
         <div className="flex items-center justify-between text-xs font-semibold">
           {[
             { id: 1, label: 'Thông tin chung', icon: FileText },
@@ -393,7 +393,7 @@ export const EventCreatePage: React.FC = () => {
       </div>
 
       {/* Step Contents */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs space-y-6">
+      <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-2xs space-y-4 sm:space-y-5">
         {/* Step 1: General Info */}
         {step === 1 && (
           <div className="space-y-4">

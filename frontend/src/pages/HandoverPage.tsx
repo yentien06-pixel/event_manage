@@ -38,7 +38,7 @@ export const HandoverPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
       <div>
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Bàn giao & Nghiệm thu Cơ sở vật chất</h1>
         <p className="text-xs text-slate-500 mt-0.5">
@@ -48,7 +48,7 @@ export const HandoverPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Form: Create Handover Record */}
-        <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+        <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-4">
           <h2 className="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
             <ClipboardCheck className="w-4 h-4 text-blue-600" />
             <span>Lập biên bản bàn giao / Nghiệm thu mới</span>
@@ -151,7 +151,7 @@ export const HandoverPage: React.FC = () => {
         </form>
 
         {/* Right Info: Selected Event Overview */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-4">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Thông tin sự kiện được chọn</h3>
 
           {selectedEvent ? (

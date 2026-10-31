@@ -135,7 +135,7 @@ export const EventDetailPage: React.FC = () => {
   const totalBudget = (event.budgetItems || []).reduce((s, i) => s + (Number(i.totalPrice) || 0), 0);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-7xl mx-auto">
       {/* Top Navigation & Breadcrumbs */}
       <div className="flex items-center justify-between">
         <button
@@ -164,7 +164,7 @@ export const EventDetailPage: React.FC = () => {
       </div>
 
       {/* Main Event Header Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
+      <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -175,7 +175,7 @@ export const EventDetailPage: React.FC = () => {
               <span className="text-slate-300">•</span>
               <span className="text-xs text-slate-500 font-medium">{event.organizingUnit}</span>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-snug">{event.title}</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">{event.title}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -201,7 +201,7 @@ export const EventDetailPage: React.FC = () => {
         </div>
 
         {/* Quick Meta Badges */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5 text-xs text-slate-600">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 mt-3.5 text-xs text-slate-600">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-blue-600" />
             <div>
@@ -240,8 +240,8 @@ export const EventDetailPage: React.FC = () => {
       <WorkflowStepper status={event.status} />
 
       {/* Tabs Navigation */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-        <div className="border-b border-slate-200 flex overflow-x-auto scrollbar-none px-4 pt-2">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
+        <div className="border-b border-slate-200 flex overflow-x-auto scrollbar-none px-3 pt-1.5 gap-0.5">
           {[
             { id: 'overview', label: '1. Thông tin chung', icon: FileText },
             { id: 'schedule', label: '2. Kịch bản chương trình', icon: Clock },
@@ -259,7 +259,7 @@ export const EventDetailPage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-xs whitespace-nowrap transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3 py-2 border-b-2 font-medium text-xs whitespace-nowrap transition-all cursor-pointer ${
                   isActive
                     ? 'border-blue-600 text-blue-700 font-bold bg-blue-50/40'
                     : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
@@ -274,7 +274,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 1: Overview */}
         {activeTab === 'overview' && (
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-5 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
@@ -339,7 +339,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 2: Agenda / Schedule */}
         {activeTab === 'schedule' && (
-          <div className="p-6">
+          <div className="p-4 sm:p-5">
             <h3 className="text-sm font-bold text-slate-800 mb-3">Kịch bản chương trình theo khung giờ</h3>
             {(event.scheduleItems || []).length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-400">Chưa nhập kịch bản chi tiết</div>
@@ -370,7 +370,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 3: Budget */}
         {activeTab === 'budget' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-800">Dự trù kinh phí chi tiết</h3>
               <div className="text-xs font-semibold text-slate-700">
@@ -415,7 +415,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 4: Facilities & Equipment */}
         {activeTab === 'facilities' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <h3 className="text-sm font-bold text-slate-800">Cơ sở vật chất & Thiết bị đã đăng ký</h3>
 
             {event.booking ? (
@@ -486,7 +486,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 5: Attachments */}
         {activeTab === 'attachments' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-800">Tài liệu và Hồ sơ đính kèm</h3>
@@ -564,7 +564,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 6: Workflow History */}
         {activeTab === 'history' && (
-          <div className="p-6">
+          <div className="p-4 sm:p-5">
             <h3 className="text-sm font-bold text-slate-800 mb-4">Lịch sử phê duyệt & Chuyển trạng thái</h3>
             <div className="space-y-4 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
               {(event.history || []).map((h) => (
@@ -592,7 +592,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 7: Handover & Return */}
         {activeTab === 'handover' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <h3 className="text-sm font-bold text-slate-800">Biên bản bàn giao & Nghiệm thu hoàn trả</h3>
             {event.handover && event.handover.length > 0 ? (
               <div className="space-y-3">
@@ -619,7 +619,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 8: Settlement */}
         {activeTab === 'settlement' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <h3 className="text-sm font-bold text-slate-800">Hồ sơ quyết toán tài chính (Phòng KHTC)</h3>
             {event.settlement ? (
               <div className="space-y-4 text-xs">
@@ -661,7 +661,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* Tab 9: Final Report */}
         {activeTab === 'report' && (
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-5 space-y-3.5">
             <h3 className="text-sm font-bold text-slate-800">Báo cáo tổng kết sau sự kiện</h3>
             {event.report ? (
               <div className="space-y-4 text-xs">
@@ -728,7 +728,7 @@ export const EventDetailPage: React.FC = () => {
       {/* Decision Action Modal */}
       {modalAction.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg p-4 sm:p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-slate-900">{modalAction.title}</h3>
               <button

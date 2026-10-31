@@ -1,5 +1,5 @@
-import React from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { Toast } from '../common/Toast';
@@ -10,6 +10,13 @@ import { AlertCircle, RefreshCw } from 'lucide-react';
 export const MainLayout: React.FC = () => {
   const auth = useAuth();
   const { loading, syncError, saving, refresh, importLegacy } = useEvents();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Tự động đóng drawer menu khi chuyển route trên màn hình nhỏ
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   if (auth.loading) {
     return (
@@ -35,11 +42,11 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FB]">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar />
-        <main className="flex-1 p-6 overflow-y-auto">
+    <div className="flex min-h-screen bg-[#F6F8FB] overflow-x-hidden">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        <Topbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
+        <main className="flex-1 p-3.5 sm:p-4 lg:p-6 overflow-y-auto overflow-x-hidden min-w-0">
           {syncError && (
             <div
               role="alert"

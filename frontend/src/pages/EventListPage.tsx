@@ -4,16 +4,11 @@ import {
   Search,
   PlusCircle,
   Eye,
-  Edit,
-  Sparkles,
   Calendar,
-  Building,
-  ChevronRight,
-  Filter,
 } from 'lucide-react';
 import { useEvents } from '../contexts/EventContext';
 import { useAuth } from '../contexts/AuthContext';
-import { statusLabels, formatDate, formatCurrency } from '../utils/helpers';
+import { statusLabels, formatDate } from '../utils/helpers';
 
 export const EventListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +19,7 @@ export const EventListPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [unitFilter, setUnitFilter] = useState<string>('ALL');
 
-  // Filter list
+  // Lọc danh sách hồ sơ
   const filteredEvents = events.filter((ev) => {
     const matchSearch =
       ev.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -51,7 +46,7 @@ export const EventListPage: React.FC = () => {
 
   const uniqueUnits = Array.from(new Set(events.map((e) => e.organizingUnit)));
 
-  // Quick tab counts
+  // Đếm số lượng theo nhóm trạng thái
   const countAll = events.length;
   const countPending = events.filter((e) =>
     ['FACULTY_REVIEW', 'UNIVERSITY_REVIEW', 'BUDGET_REVIEW', 'FACILITY_REVIEW', 'FINANCE_REVIEW'].includes(e.status)
@@ -63,22 +58,22 @@ export const EventListPage: React.FC = () => {
   const countCompleted = events.filter((e) => e.status === 'COMPLETED').length;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3.5 sm:space-y-4 max-w-7xl mx-auto w-full">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
             {currentUser.role === 'BTC' ? 'Hồ sơ sự kiện của tôi' : 'Danh mục hồ sơ sự kiện'}
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Quản lý toàn diện vòng đời tiếp nhận, xét duyệt, mượn cơ sở vật chất và quyết toán
+            Quản lý và theo dõi tiến trình xét duyệt hồ sơ sự kiện sinh viên
           </p>
         </div>
 
         {['BTC', 'ADMIN'].includes(currentUser.role) && (
           <button
             onClick={() => navigate('/events/create')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#075F9F] hover:bg-[#054877] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer self-start sm:self-auto min-h-[40px]"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#075ea1] hover:bg-[#054877] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer self-start sm:self-auto min-h-[38px]"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Tạo hồ sơ mới (5 bước)</span>
@@ -86,8 +81,23 @@ export const EventListPage: React.FC = () => {
         )}
       </div>
 
-      {/* Role-Smart Quick Filter Tabs according to Sitemap */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {/* Role-Smart Quick Filter: Dropdown on Mobile (<sm), Tabs on Desktop (>=sm) */}
+      <div className="sm:hidden w-full">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="Lọc theo trạng thái hồ sơ"
+          className="w-full bg-white border border-slate-200 text-slate-800 font-semibold text-xs rounded-xl px-3 py-2.5 shadow-2xs focus:outline-hidden focus:border-[#075ea1]"
+        >
+          <option value="ALL">Tất cả hồ sơ ({countAll})</option>
+          <option value="PENDING">Chờ xét duyệt ({countPending})</option>
+          <option value="REVISION">Cần bổ sung / Sửa ({countRevision})</option>
+          <option value="APPROVED">Đã cấp phép ({countApproved})</option>
+          <option value="COMPLETED">Đã hoàn tất ({countCompleted})</option>
+        </select>
+      </div>
+
+      <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none w-full">
         {[
           { key: 'ALL', label: 'Tất cả hồ sơ', count: countAll },
           { key: 'PENDING', label: 'Chờ xét duyệt', count: countPending },
@@ -98,9 +108,9 @@ export const EventListPage: React.FC = () => {
           <button
             key={tab.key}
             onClick={() => setStatusFilter(tab.key)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
               statusFilter === tab.key
-                ? 'bg-[#075F9F] text-white shadow-xs'
+                ? 'bg-[#075ea1] text-white shadow-xs'
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
             }`}
           >
@@ -117,17 +127,17 @@ export const EventListPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-wrap gap-3 items-center justify-between">
-        <div className="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+      <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative flex-1">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Tìm kiếm theo mã hồ sơ, tên sự kiện, đơn vị..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-hidden focus:bg-white focus:border-[#075F9F] focus:ring-1 focus:ring-[#075F9F]"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-hidden focus:bg-white focus:border-[#075ea1] focus:ring-1 focus:ring-[#075ea1]"
             />
           </div>
 
@@ -136,7 +146,7 @@ export const EventListPage: React.FC = () => {
             value={unitFilter}
             onChange={(e) => setUnitFilter(e.target.value)}
             aria-label="Lọc theo đơn vị tổ chức"
-            className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:outline-hidden focus:border-[#075F9F] cursor-pointer max-w-[220px] truncate"
+            className="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-2 focus:outline-hidden focus:border-[#075ea1] cursor-pointer max-w-full sm:max-w-[200px] truncate"
           >
             <option value="ALL">Tất cả đơn vị tổ chức</option>
             {uniqueUnits.map((u) => (
@@ -147,76 +157,128 @@ export const EventListPage: React.FC = () => {
           </select>
         </div>
 
-        <div className="text-xs text-slate-500 font-medium">
+        <div className="text-xs text-slate-500 font-medium text-right sm:text-left shrink-0">
           Hiển thị <span className="font-bold text-slate-800">{filteredEvents.length}</span> / {events.length} hồ sơ
         </div>
       </div>
 
-      {/* Events Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* ── Mobile Vertical Card List (< 768px: md:hidden) ── */}
+      <div className="md:hidden space-y-2.5 w-full">
+        {filteredEvents.length === 0 ? (
+          <div className="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-400 text-xs shadow-2xs">
+            Không tìm thấy hồ sơ sự kiện nào phù hợp điều kiện lọc
+          </div>
+        ) : (
+          filteredEvents.map((ev) => {
+            const statusInfo = statusLabels[ev.status];
+            return (
+              <div
+                key={ev.id}
+                onClick={() => navigate(`/events/${ev.id}`)}
+                className="bg-white rounded-xl border border-slate-200/90 p-3.5 shadow-2xs active:bg-slate-50 transition-colors cursor-pointer flex flex-col gap-2"
+              >
+                {/* Header card: Mã hồ sơ + Badge trạng thái */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-bold text-[#075ea1] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                    {ev.eventCode}
+                  </span>
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border truncate max-w-[170px] ${statusInfo?.bg} ${statusInfo?.color} ${statusInfo?.border}`}
+                  >
+                    {statusInfo?.label}
+                  </span>
+                </div>
+
+                {/* Tên sự kiện: Giới hạn tối đa 2 dòng */}
+                <h3 className="font-bold text-sm text-slate-900 line-clamp-2 leading-snug">
+                  {ev.title}
+                </h3>
+
+                {/* Đơn vị tổ chức */}
+                <div className="text-xs text-slate-500 truncate">
+                  {ev.organizingUnit}
+                </div>
+
+                {/* Footer card: Ngày tổ chức + Nút con mắt xem chi tiết */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-0.5">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span>{formatDate(ev.startDate)}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/events/${ev.id}`);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#075ea1] text-xs font-semibold cursor-pointer border border-blue-200 transition-colors"
+                    title="Xem chi tiết hồ sơ"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Chi tiết</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* ── Desktop Multi-Column Table (>= 768px: hidden md:block) ── */}
+      <div className="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                <th className="py-3 px-4">Mã hồ sơ</th>
-                <th className="py-3 px-4">Tên sự kiện & Đơn vị</th>
-                <th className="py-3 px-4">Thời gian tổ chức</th>
-                <th className="py-3 px-4">Hội trường dự kiến</th>
-                <th className="py-3 px-4">Dự toán</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
-                <th className="py-3 px-4 text-right">Thao tác</th>
+                <th className="py-2.5 px-4">Mã hồ sơ</th>
+                <th className="py-2.5 px-4">Tên sự kiện</th>
+                <th className="py-2.5 px-4">Đơn vị tổ chức</th>
+                <th className="py-2.5 px-4">Thời gian tổ chức</th>
+                <th className="py-2.5 px-4 text-center">Trạng thái</th>
+                <th className="py-2.5 px-4 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
               {filteredEvents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                  <td colSpan={6} className="py-10 text-center text-slate-400">
                     Không tìm thấy hồ sơ sự kiện nào phù hợp điều kiện lọc
                   </td>
                 </tr>
               ) : (
                 filteredEvents.map((ev) => {
                   const statusInfo = statusLabels[ev.status];
-                  const totalBudget = (ev.budgetItems || []).reduce((s, i) => s + (Number(i.totalPrice) || 0), 0);
-
                   return (
                     <tr
                       key={ev.id}
                       onClick={() => navigate(`/events/${ev.id}`)}
                       className="hover:bg-blue-50/40 transition-colors cursor-pointer group"
                     >
-                      <td className="py-3.5 px-4 font-mono font-bold text-[#075F9F] whitespace-nowrap">
-                        <span className="bg-blue-50 group-hover:bg-white px-2 py-0.5 rounded border border-blue-200">
+                      <td className="py-3 px-4 font-mono font-bold text-[#075ea1] whitespace-nowrap">
+                        <span className="bg-blue-50 group-hover:bg-white px-2 py-0.5 rounded border border-blue-200 text-xs">
                           {ev.eventCode}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 max-w-xs">
-                        <div className="font-bold text-slate-900 group-hover:text-[#075F9F] line-clamp-1 transition-colors">
+                      <td className="py-3 px-4 max-w-sm">
+                        <div className="font-bold text-slate-900 group-hover:text-[#075ea1] line-clamp-2 transition-colors">
                           {ev.title}
                         </div>
-                        <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{ev.organizingUnit}</div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap text-slate-600">
+                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
+                        {ev.organizingUnit}
+                      </td>
+
+                      <td className="py-3 px-4 whitespace-nowrap text-slate-600">
                         <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span>{formatDate(ev.startDate)}</span>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap text-slate-600">
-                        <div className="flex items-center gap-1.5">
-                          <Building className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="truncate max-w-[140px]">{ev.preferredVenue}</span>
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-4 whitespace-nowrap font-semibold text-slate-700">
-                        {totalBudget > 0 ? formatCurrency(totalBudget) : '--'}
-                      </td>
-
-                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                      <td className="py-3 px-4 text-center whitespace-nowrap">
                         <span
                           className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${statusInfo?.bg} ${statusInfo?.color} ${statusInfo?.border}`}
                         >
@@ -224,30 +286,16 @@ export const EventListPage: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td className="py-3 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5">
                           <button
+                            type="button"
                             onClick={() => navigate(`/events/${ev.id}`)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-[#075F9F] hover:bg-blue-50 transition-colors cursor-pointer"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[#075ea1] bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-semibold transition-colors cursor-pointer"
                             title="Xem chi tiết hồ sơ"
                           >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          {['BTC', 'ADMIN'].includes(currentUser.role) && (
-                            <button
-                              onClick={() => navigate(`/events/${ev.id}/edit`)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
-                              title="Chỉnh sửa hồ sơ"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => navigate(`/ai-review?eventId=${ev.id}`)}
-                            className="p-1.5 rounded-lg text-indigo-500 hover:text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer"
-                            title="Rà soát bằng AI"
-                          >
-                            <Sparkles className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Chi tiết</span>
                           </button>
                         </div>
                       </td>

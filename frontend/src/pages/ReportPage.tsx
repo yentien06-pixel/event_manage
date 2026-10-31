@@ -62,7 +62,7 @@ export const ReportPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-4xl mx-auto">
       <div>
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Báo cáo Tổng kết Sự kiện</h1>
         <p className="text-xs text-slate-500 mt-0.5">
@@ -70,7 +70,7 @@ export const ReportPage: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmitReport} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-5">
+      <form onSubmit={handleSubmitReport} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">Chọn sự kiện lập báo cáo:</label>

@@ -71,7 +71,7 @@ export const SettlementPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto">
       <div>
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Quyết toán Tài chính & Chứng từ (KHTC)</h1>
         <p className="text-xs text-slate-500 mt-0.5">
@@ -95,7 +95,7 @@ export const SettlementPage: React.FC = () => {
       </div>
 
       {selectedEvent && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-5">
           {/* Summary KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
@@ -128,7 +128,7 @@ export const SettlementPage: React.FC = () => {
           </div>
 
           {/* Documents Table */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+          <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-sm font-bold text-slate-800">Danh mục hóa đơn chứng từ kèm theo</h3>
 

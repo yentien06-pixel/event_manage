@@ -178,16 +178,10 @@ export const LoginPage: React.FC = () => {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#F6F7FB] flex items-center justify-center p-4 sm:p-5">
-      <div
-        className="w-[90vw] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col md:flex-row my-auto"
-        style={{ minHeight: '82vh' }}
-      >
-        {/* ── Left Side: Campus Image ── */}
-        <div
-          className="relative w-full md:w-[52%] overflow-hidden select-none rounded-3xl md:rounded-r-none"
-          style={{ minHeight: '60vh' }}
-        >
+    <div className="min-h-screen bg-[#F6F7FB] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-md lg:max-w-4xl xl:max-w-5xl bg-white rounded-2xl shadow-xl border border-slate-200/90 flex flex-col lg:flex-row overflow-hidden my-auto">
+        {/* ── Left Side: Campus Image (Desktop only: >= 1024px) ── */}
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden select-none min-h-[540px]">
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url('/images/SanTruongDUE.jpg')` }}
@@ -196,17 +190,17 @@ export const LoginPage: React.FC = () => {
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(180deg, rgba(24,80,117,0) 0%, rgba(24,80,117,0.45) 45%, rgba(14,58,89,0.92) 80%, rgba(10,45,70,0.98) 100%)',
+                'linear-gradient(180deg, rgba(24,80,117,0.1) 0%, rgba(14,58,89,0.7) 50%, rgba(10,45,70,0.95) 100%)',
             }}
           />
-          <div className="relative z-10 flex flex-col justify-end h-full p-10 sm:p-14 lg:p-16 text-white">
-            <span className="text-sm sm:text-base font-bold tracking-widest text-white/90 uppercase">
+          <div className="relative z-10 flex flex-col justify-end h-full p-8 xl:p-10 text-white">
+            <span className="text-xs font-bold tracking-widest text-white/90 uppercase">
               ĐẠI HỌC ĐÀ NẴNG
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-2 leading-snug">
+            <h1 className="text-2xl xl:text-3xl font-bold text-white tracking-tight mt-1.5 leading-snug">
               Trường Đại học Kinh tế
             </h1>
-            <p className="text-sm sm:text-base text-white/95 leading-relaxed mt-4 max-w-xl font-normal">
+            <p className="text-xs xl:text-sm text-white/90 leading-relaxed mt-3 font-normal max-w-md">
               Hệ thống tiếp nhận, xét duyệt và cấp phép tổ chức sự kiện số hóa toàn diện –
               Tối ưu hóa quy trình nghiệp vụ, kết nối thông suốt giữa Ban Tổ chức, Ban Chủ
               nhiệm Khoa, Đoàn Trường và các Phòng chức năng.
@@ -214,31 +208,34 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Right Side: Clean Login Form (No Role List) ── */}
-        <div className="w-full md:w-[48%] bg-white p-10 sm:p-14 lg:p-20 flex flex-col justify-center rounded-3xl md:rounded-l-none">
-          <div className="w-full max-w-xl mx-auto">
+        {/* ── Right Side: Clean Login Form ── */}
+        <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+          <div className="w-full max-w-sm mx-auto">
 
             {/* Header */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <img
                 src="/images/due_logo_emblem.png"
                 alt="Logo DUE"
-                className="h-20 sm:h-24 w-auto object-contain mx-auto"
+                className="h-14 sm:h-16 w-auto object-contain mx-auto"
               />
-              <h2 className="text-center font-bold text-base sm:text-lg tracking-wide text-[#005597] mt-5 uppercase">
-                TRƯỜNG ĐẠI HỌC KINH TẾ – ĐH ĐÀ NẴNG
+              <div className="text-[11px] sm:text-xs font-bold tracking-widest text-[#005597]/80 uppercase mt-3">
+                ĐẠI HỌC ĐÀ NẴNG
+              </div>
+              <h2 className="text-center font-bold text-sm sm:text-base tracking-wide text-[#005597] mt-0.5 uppercase">
+                TRƯỜNG ĐẠI HỌC KINH TẾ
               </h2>
-              <p className="text-center text-sm sm:text-base text-slate-500 font-medium mt-2">
+              <p className="text-center text-xs sm:text-sm text-slate-500 font-medium mt-1">
                 Hệ thống quản lý quy trình tổ chức sự kiện
               </p>
             </div>
 
             {/* Login Form */}
-            <form onSubmit={handleLogin} noValidate className="space-y-5">
+            <form onSubmit={handleLogin} noValidate className="space-y-4">
 
               {/* ── Email Field + Dropdown ── */}
               <div>
-                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
                   Email <span className="text-red-500">*</span>
                 </label>
 
@@ -258,13 +255,13 @@ export const LoginPage: React.FC = () => {
                       }}
                       placeholder="Ví dụ: btc1@eventflow.vn"
                       autoComplete="off"
-                      className={`w-full px-5 py-3.5 text-sm sm:text-base text-slate-800
-                        placeholder-slate-400 bg-white rounded-xl border transition-all
+                      className={`w-full px-3.5 py-2.5 text-sm text-slate-800
+                        placeholder-slate-400 bg-white rounded-lg border transition-all
                         ${emailError
                           ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20'
-                          : 'border-slate-300 focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20'
+                          : 'border-slate-300 focus:outline-none focus:border-[#075ea1] focus:ring-2 focus:ring-[#075ea1]/20'
                         }
-                        ${hasAccounts ? 'pr-10' : ''}`}
+                        ${hasAccounts ? 'pr-9' : ''}`}
                     />
 
                     {/* Chevron toggle button */}
@@ -276,7 +273,7 @@ export const LoginPage: React.FC = () => {
                           e.stopPropagation();
                           setShowDropdown((v) => !v);
                         }}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400
                           hover:text-slate-600 transition-colors cursor-pointer"
                         title="Xem tài khoản đã đăng nhập"
                       >
@@ -295,18 +292,18 @@ export const LoginPage: React.FC = () => {
                         rounded-xl shadow-xl overflow-hidden"
                       style={{ zIndex: 9999 }}
                     >
-                      <div className="px-3 pt-2.5 pb-1.5 flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/70">
+                      <div className="px-3 pt-2 pb-1.5 flex items-center gap-1.5 border-b border-slate-100 bg-slate-50/70">
                         <Clock className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        <span className="text-xs text-slate-400 font-medium">
+                        <span className="text-xs text-slate-500 font-medium">
                           Tài khoản đã đăng nhập ({savedAccounts.length})
                         </span>
                       </div>
 
-                      <ul className="max-h-52 overflow-y-auto py-1">
+                      <ul className="max-h-48 overflow-y-auto py-1">
                         {savedAccounts.map((account) => (
                           <li key={account.email}>
                             <div
-                              className="flex items-center justify-between px-4 py-3
+                              className="flex items-center justify-between px-3.5 py-2
                                 hover:bg-[#f0f7ff] cursor-pointer group transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -314,10 +311,10 @@ export const LoginPage: React.FC = () => {
                               }}
                             >
                               <div className="flex flex-col min-w-0 flex-1">
-                                <span className="text-sm font-semibold text-slate-700 truncate">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-700 truncate">
                                   {account.email}
                                 </span>
-                                <span className="text-xs text-slate-400 mt-0.5">
+                                <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">
                                   {new Date(account.lastLogin).toLocaleString('vi-VN', {
                                     day: '2-digit',
                                     month: '2-digit',
@@ -334,7 +331,7 @@ export const LoginPage: React.FC = () => {
                                   e.stopPropagation();
                                   handleRemoveAccount(e, account.email);
                                 }}
-                                className="ml-3 flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                className="ml-2 flex-shrink-0 w-5 h-5 flex items-center justify-center
                                   rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50
                                   transition-colors opacity-0 group-hover:opacity-100"
                                 title={`Xóa ${account.email} khỏi danh sách`}
@@ -350,13 +347,13 @@ export const LoginPage: React.FC = () => {
                 </div>
 
                 {emailError && (
-                  <p className="text-sm text-[#b74245] mt-1.5 font-medium">{emailError}</p>
+                  <p className="text-xs text-[#b74245] mt-1 font-medium">{emailError}</p>
                 )}
               </div>
 
               {/* ── Password Field ── */}
               <div>
-                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
                   Mật khẩu <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -369,8 +366,8 @@ export const LoginPage: React.FC = () => {
                       if (e.target.value.trim()) setPasswordError('');
                     }}
                     placeholder="Nhập mật khẩu..."
-                    className={`w-full pl-5 pr-12 py-3.5 text-sm sm:text-base text-slate-800
-                      placeholder-slate-400 bg-white rounded-xl border transition-all
+                    className={`w-full pl-3.5 pr-10 py-2.5 text-sm text-slate-800
+                      placeholder-slate-400 bg-white rounded-lg border transition-all
                       ${passwordError
                         ? 'border-[#b74245] ring-2 ring-[#b74245]/20'
                         : 'border-slate-300 focus:outline-none focus:border-[#075ea1] focus:ring-2 focus:ring-[#075ea1]/20'
@@ -380,28 +377,28 @@ export const LoginPage: React.FC = () => {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     tabIndex={-1}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400
                       hover:text-slate-600 transition-colors cursor-pointer"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {passwordError && (
-                  <p className="text-sm text-[#b74245] mt-1.5 font-medium">{passwordError}</p>
+                  <p className="text-xs text-[#b74245] mt-1 font-medium">{passwordError}</p>
                 )}
               </div>
 
               {/* ── Remember Me ── */}
-              <div className="pt-1">
-                <label className="flex items-center gap-3 cursor-pointer select-none">
+              <div className="pt-0.5">
+                <label className="flex items-center gap-2.5 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-5 h-5 rounded text-[#075ea1] focus:ring-[#075ea1]
+                    className="w-4 h-4 rounded text-[#075ea1] focus:ring-[#075ea1]
                       border-slate-300 accent-[#075ea1] cursor-pointer"
                   />
-                  <span className="text-sm sm:text-base text-slate-600">
+                  <span className="text-xs sm:text-sm text-slate-600">
                     Ghi nhớ đăng nhập trên thiết bị này
                   </span>
                 </label>
@@ -409,20 +406,20 @@ export const LoginPage: React.FC = () => {
 
               {/* ── Lỗi chung ── */}
               {generalError && (
-                <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl
-                  text-sm font-medium text-center">
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg
+                  text-xs sm:text-sm font-medium text-center">
                   {generalError}
                 </div>
               )}
 
               {/* ── Submit Button ── */}
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full py-4 bg-[#075ea1] hover:bg-[#065089] text-white rounded-xl
-                    text-base sm:text-lg font-bold transition-all shadow-md flex items-center
-                    justify-center min-h-[52px] cursor-pointer disabled:opacity-60"
+                  className="w-full py-2.5 px-4 bg-[#075ea1] hover:bg-[#065089] text-white rounded-lg
+                    text-sm font-semibold transition-all shadow-sm flex items-center
+                    justify-center min-h-[42px] cursor-pointer disabled:opacity-60"
                 >
                   {pending ? 'Đang đăng nhập...' : 'Đăng nhập hệ thống'}
                 </button>

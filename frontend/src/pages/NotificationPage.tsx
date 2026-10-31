@@ -9,7 +9,7 @@ export const NotificationPage: React.FC = () => {
   const { notifications, markNotificationAsRead, markAllNotificationsAsRead } = useEvents();
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">Trung tâm Thông báo</h1>

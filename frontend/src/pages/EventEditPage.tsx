@@ -112,7 +112,7 @@ export const EventEditPage: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSave} className="max-w-4xl mx-auto space-y-6">
+    <form onSubmit={handleSave} className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -130,7 +130,7 @@ export const EventEditPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-5">
+      <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 space-y-4">
         <div>
           <span className="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
             {event.eventCode} (Hiện tại: v{event.currentVersion})

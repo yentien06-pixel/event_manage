@@ -20,7 +20,7 @@ export const SystemSettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-4 sm:space-y-5 max-w-4xl mx-auto">
       <div>
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Cấu hình Hệ thống</h1>
         <p className="text-xs text-slate-500 mt-0.5">
@@ -28,7 +28,7 @@ export const SystemSettingsPage: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSave} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-5">
+      <form onSubmit={handleSave} className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs space-y-5">
         <h2 className="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
           <Settings className="w-4 h-4 text-blue-600" />
           <span>Tham số Quy trình & Cơ sở vật chất</span>
